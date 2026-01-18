@@ -1,32 +1,33 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { hashPassword, comparePassword } from "../utils/hash";
-import {
-  generateAccessToken,
-  generateRefreshToken,
-} from "../utils/jwt";
+import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
 
 const prisma = new PrismaClient();
 
 export const register = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
 
-  const exists = await prisma.user.findUnique({
+  const existingUser = await prisma.user.findUnique({
     where: { email },
   });
-  if (exists) {
+
+  if (existingUser) {
     return res.status(400).json({ message: "User already exists" });
   }
+
+  const hashedPassword = await hashPassword(password);
 
   const user = await prisma.user.create({
     data: {
       name,
       email,
-      password: await hashPassword(password),
+      password: hashedPassword,
+      // role defaults to USER
     },
   });
 
-  res.status(201).json({
+  return res.json({
     accessToken: generateAccessToken({
       id: user.id,
       role: user.role,
@@ -43,16 +44,18 @@ export const login = async (req: Request, res: Response) => {
   const user = await prisma.user.findUnique({
     where: { email },
   });
+
   if (!user) {
     return res.status(400).json({ message: "Invalid credentials" });
   }
 
-  const match = await comparePassword(password, user.password);
-  if (!match) {
+  const isPasswordValid = await comparePassword(password, user.password);
+
+  if (!isPasswordValid) {
     return res.status(400).json({ message: "Invalid credentials" });
   }
 
-  res.json({
+  return res.json({
     accessToken: generateAccessToken({
       id: user.id,
       role: user.role,
@@ -64,5 +67,5 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const logout = async (_req: Request, res: Response) => {
-  res.json({ message: "Logout successful" });
+  return res.json({ message: "Logged out successfully" });
 };
