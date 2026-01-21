@@ -1,19 +1,26 @@
 import jwt from "jsonwebtoken";
 import { Role } from "@prisma/client";
 
+const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
+
 export interface AccessTokenPayload {
   id: number;
   role: Role;
 }
 
-export const generateAccessToken = (payload: AccessTokenPayload) => {
-  return jwt.sign(payload, process.env.JWT_SECRET as string, {
-    expiresIn: "15m",
+/**
+ * Generate JWT
+ */
+export const generateAccessToken = (payload: AccessTokenPayload): string => {
+  return jwt.sign(payload, JWT_SECRET, {
+    expiresIn: "1d",
   });
 };
 
-export const generateRefreshToken = (payload: { id: number }) => {
-  return jwt.sign(payload, process.env.JWT_REFRESH_SECRET as string, {
-    expiresIn: "7d",
-  });
+/**
+ * Verify JWT
+ */
+export const verifyAccessToken = (token: string): AccessTokenPayload => {
+  return jwt.verify(token, JWT_SECRET) as AccessTokenPayload;
 };
+
