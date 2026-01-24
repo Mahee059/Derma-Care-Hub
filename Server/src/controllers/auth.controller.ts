@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { generateAccessToken } from "../utils/jwt";
-
 const prisma = new PrismaClient();
 
 /**
