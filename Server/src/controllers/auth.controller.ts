@@ -1,88 +1,152 @@
-
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
-import { generateAccessToken } from "../utils/jwt";
-const prisma = new PrismaClient();
+import jwt from "jsonwebtoken";
+import { db } from "../lib/prisma";
+import { Role } from "@prisma/client";
+
+const JWT_SECRET = process.env.JWT_SECRET as string;
+const JWT_EXPIRES_IN = "7d";
 
 /**
- * REGISTER
+ * Register User / Dermatologist
  */
 export const register = async (req: Request, res: Response) => {
   try {
-    const { firstName, lastName, email, password, phone } = req.body;
+    const { name, email, phone, password, role } = req.body;
 
-    if (!firstName || !lastName || !email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
+    // Check required fields
+    if (!email || !phone || !password) {
+      res.status(400).json({
+        success: false,
+        message: "Email, phone and password are required",
+      });
+      return;
     }
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      return res.status(409).json({ message: "Email already registered" });
+    // Check email
+    const existingEmail = await db.user.findUnique({
+      where: { email },
+    });
+
+    if (existingEmail) {
+      res.status(400).json({
+        success: false,
+        message: "Email already exists",
+      });
+      return;
     }
 
+    // Check phone
+    const existingPhone = await db.user.findUnique({
+      where: { phone },
+    });
+
+    if (existingPhone) {
+      res.status(400).json({
+        success: false,
+        message: "Phone already exists",
+      });
+      return;
+    }
+
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await prisma.user.create({
+    // Create user
+    const user = await db.user.create({
       data: {
-        firstName,
-        lastName,
+        name,
         email,
+        phone,
         password: hashedPassword,
-        phone: phone || null,
+        role: role || Role.USER,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        role: true,
       },
     });
 
     res.status(201).json({
-      id: user.id,
-      email: user.email,
-      role: user.role,
+      success: true,
+      message: "Registered successfully",
+      user,
     });
   } catch (error) {
     console.error("Register error:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
 
 /**
- * LOGIN
+ * Login
  */
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: "Email and password required" });
+      res.status(400).json({
+        success: false,
+        message: "Email and password are required",
+      });
+      return;
     }
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await db.user.findUnique({
+      where: { email },
+    });
 
     if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      res.status(400).json({
+        success: false,
+        message: "Invalid email or password",
+      });
+      return;
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      res.status(400).json({
+        success: false,
+        message: "Invalid email or password",
+      });
+      return;
     }
 
-    const token = generateAccessToken({
-      id: user.id,
-      role: user.role,
-    });
+    // Generate token
+    const token = jwt.sign(
+      {
+        id: user.id,
+        role: user.role,
+      },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
 
-    res.json({
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
       token,
       user: {
         id: user.id,
+        name: user.name,
         email: user.email,
+        phone: user.phone,
         role: user.role,
       },
     });
   } catch (error) {
     console.error("Login error:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };

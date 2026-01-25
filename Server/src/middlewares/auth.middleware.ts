@@ -1,36 +1,72 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyAccessToken } from "../utils/jwt";
-import { Role } from "@prisma/client";
+import jwt from "jsonwebtoken";
+import { db } from "../lib/prisma";
 
-export interface AuthRequest extends Request {
-  user?: {
-    id: number;
-    role: Role;
-  };
+interface AuthRequest extends Request {
+  user?: any;
 }
 
-export const authMiddleware = (
+declare global {
+  namespace Express {
+    interface Request {
+      user?: any;
+    }
+  }
+}
+
+export const authMiddleware = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
 ) => {
-  const authHeader = req.headers.authorization;
+  const token = req.headers.authorization;
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Unauthorized" });
+  if (!token) {
+    res
+      .status(401)
+      .json({ success: false, message: "Not authroized, login Again" });
+    return;
   }
-
   try {
-    const token = authHeader.split(" ")[1];
-    const decoded = verifyAccessToken(token);
-
-    req.user = {
-      id: decoded.id,
-      role: decoded.role,
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
+      id: string;
     };
+
+    const user = await db.user.findUnique({
+      where: {
+        id: decoded.id,
+      },
+    });
+
+    if (!user) {
+      res.status(401).json({ success: false, message: "User not found" });
+      return;
+    }
+
+    req.user = user;
 
     next();
   } catch (error) {
-    return res.status(401).json({ message: "Invalid token" });
+    console.error("jwt error: ", error);
+    res
+      .status(401)
+      .json({ success: false, message: "Invalid or expired token" });
   }
+};
+
+export const authorize = (...roles: string[]) => {
+  return async (req: AuthRequest, res: Response, next: NextFunction) => {
+    const user = await db.user.findUnique({
+      where: { id: req.user.id },
+    });
+
+    if (!user || !roles.includes(user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to access this route",
+      });
+    }
+
+    next();
+  };
 };
