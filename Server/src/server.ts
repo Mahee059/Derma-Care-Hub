@@ -4,41 +4,39 @@ import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth.routes" 
 import userRoutes from "./routes/user.routes";
+import skinProfileRoutes from "./routes/skinprofile.routes";
+
 
 dotenv.config();
 
 const app = express();
 
-/* =========================
-   Middlewares
-========================= */
+//Middlewares 
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-/* =========================
-   Health Check Route
-========================= */
+// Health Check Route
 app.get("/", (_req, res) => {
   res.send("DermaCare API is running 🚀");
 });
 
-/* =========================
-   Routes
-========================= */
+
+// Routes
 app.use("/api/auth", authRoutes); // ✅ authRoutes now defined
 app.use("/api/users", userRoutes);
+app.use("/skin-profile", skinProfileRoutes)
 
-/* =========================
-   404 Handler
-========================= */
+
+
+// 404 Handler
 app.use((_req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
+ 
 
-/* =========================
-   Server Start
-========================= */
+// Server Start
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

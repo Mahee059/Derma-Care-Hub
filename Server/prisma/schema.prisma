@@ -17,7 +17,28 @@ enum Role {
   PENDING
   APPROVED
   REJECTED
+} 
+ enum SkinType {
+  DRY
+  OILY
+  COMBINATION
+  NORMAL
+  SENSITIVE
 }
+
+enum SkinConcern {
+  ACNE
+  AGING
+  PIGMENTATION
+  SENSITIVITY
+  DRYNESS
+  OILINESS
+  REDNESS
+  UNEVEN_TEXTURE
+}
+ 
+
+
 model User {
   id              String              @id @default(uuid())
   email           String              @unique
@@ -30,5 +51,83 @@ model User {
   status          DermatologistStatus @default(PENDING)
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
+  skinProfile     SkinProfile?  
+  skinAnalyses    SkinAnalysis[]
+  routines        Routine[]   
+  progressLogs    ProgressLog[]
+
 }
 
+
+model SkinProfile {
+  id             String                 @id @default(uuid())
+  userId         String                 @unique
+  user           User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  allergies      String?
+  goals          String?
+  lastAssessment DateTime               @default(now())
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt  
+
+  
+} 
+ 
+model SkinAnalysis {
+  id         String      @id @default(uuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id])
+
+  imageUrl   String
+  skinType   SkinType
+  summary    String      @db.Text
+  confidence Float?
+
+  concerns   SkinAnalysisConcern[]
+
+  createdAt  DateTime    @default(now())
+}
+
+model SkinAnalysisConcern {
+  id             String        @id @default(uuid())
+  skinAnalysisId String
+  skinAnalysis   SkinAnalysis  @relation(fields: [skinAnalysisId], references: [id], onDelete: Cascade)
+  concern        SkinConcern
+}
+
+
+model Product {
+  id                  String               @id @default(uuid())
+  name                String
+  brand               String
+  description         String               @db.Text
+  ingredients         String               @db.Text
+  sustainabilityScore Int
+  allergens           String?
+  imageUrl            String?
+  price               Decimal              @db.Decimal(10, 2)
+  externalUrl         String? 
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt 
+} 
+
+model Routine {
+  id        String        @id @default(uuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  type      String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+} 
+
+
+model ProgressLog {
+  id        String      @id @default(uuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  imageUrl  String?
+  notes     String?     @db.Text
+  concerns  SkinConcern
+  rating    Int // Scale of 1-5
+  createdAt DateTime    @default(now())
+}
