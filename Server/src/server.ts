@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth.routes" 
 import userRoutes from "./routes/user.routes";
-import skinProfileRoutes from "./routes/skinprofile.routes";
+import skinProfileRoutes from "./routes/skinProfile.routes";
 
 
 dotenv.config();
