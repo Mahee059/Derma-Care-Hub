@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { db } from "../lib/prisma";
+import { SkinType, SkinConcern } from "@prisma/client";
 
 interface AuthRequest extends Request {
   user?: any;
@@ -7,19 +8,40 @@ interface AuthRequest extends Request {
 
 export const getProducts = async (req: Request, res: Response) => {
   try {
-    const { page = 1, limit = 12 } = req.query;
+    const { skinType, concerns, page = 1, limit = 12 } = req.query;
 
     const skip = (Number(page) - 1) * Number(limit);
 
+    const where: any = {};
+
+    if (skinType) {
+      where.suitableFor = {
+        has: skinType as SkinType,
+      };
+    }
+
+    if (concerns) {
+      where.targetConcerns = {
+        hasSome: Array.isArray(concerns)
+          ? (concerns as SkinConcern[])
+          : [concerns as SkinConcern],
+      };
+    }
+
     const [products, total] = await Promise.all([
       db.product.findMany({
+        where,
         skip,
         take: Number(limit),
         orderBy: {
           createdAt: "desc",
         },
+        include: {
+          suitableSkinTypes: true,
+          targetConcerns: true,
+        },
       }),
-      db.product.count(),
+      db.product.count({ where }),
     ]);
 
     res.json({
@@ -47,6 +69,10 @@ export const getProductById = async (req: Request, res: Response) => {
 
     const product = await db.product.findUnique({
       where: { id },
+      include: {
+        suitableSkinTypes: true,
+        targetConcerns: true,
+      },
     });
 
     if (!product) {
@@ -84,11 +110,41 @@ export const getRecommendedProducts = async (
       return;
     }
 
-    // Now we simply return the latest 6 products
+    const skinProfile = await db.skinProfile.findUnique({
+      where: { userId },
+      include: {
+        SkinType: true,
+        Concerns: true,
+      },
+    });
+
+    if (!skinProfile) {
+      res.status(404).json({
+        success: false,
+        message: "Skin profile not found",
+      });
+      return;
+    }
+
+    const skinTypes = skinProfile.SkinType.map((s) => s.type);
+    const concerns = skinProfile.Concerns.map((c) => c.concern);
+
     const products = await db.product.findMany({
+      where: {
+        suitableSkinTypes: {
+          some: { type: { in: skinTypes } },
+        },
+        targetConcerns: {
+          some: { concern: { in: concerns } },
+        },
+      },
       take: 6,
       orderBy: {
-        createdAt: "desc",
+        sustainabilityScore: "desc",
+      },
+      include: {
+        suitableSkinTypes: true,
+        targetConcerns: true,
       },
     });
 
@@ -116,6 +172,8 @@ export const createProduct = async (req: Request, res: Response) => {
       sustainabilityScore,
       allergens,
       externalUrl,
+      skinTypes,
+      concerns,
     } = req.body;
 
     const product = await db.product.create({
@@ -128,6 +186,16 @@ export const createProduct = async (req: Request, res: Response) => {
         sustainabilityScore: Number(sustainabilityScore),
         allergens,
         externalUrl,
+        suitableSkinTypes: {
+          create: skinTypes.map((type: SkinType) => ({ type })),
+        },
+        targetConcerns: {
+          create: concerns.map((concern: SkinConcern) => ({ concern })),
+        },
+      },
+      include: {
+        suitableSkinTypes: true,
+        targetConcerns: true,
       },
     });
 
@@ -156,7 +224,17 @@ export const updateProduct = async (req: Request, res: Response) => {
       sustainabilityScore,
       allergens,
       externalUrl,
+      skinTypes,
+      concerns,
     } = req.body;
+
+    // Delete existing skin types and concerns
+    await db.productSkinType.deleteMany({
+      where: { productId: id },
+    });
+    await db.productSkinConcern.deleteMany({
+      where: { productId: id },
+    });
 
     const product = await db.product.update({
       where: { id },
@@ -169,6 +247,16 @@ export const updateProduct = async (req: Request, res: Response) => {
         sustainabilityScore: Number(sustainabilityScore),
         allergens,
         externalUrl,
+        suitableSkinTypes: {
+          create: skinTypes.map((type: SkinType) => ({ type })),
+        },
+        targetConcerns: {
+          create: concerns.map((concern: SkinConcern) => ({ concern })),
+        },
+      },
+      include: {
+        suitableSkinTypes: true,
+        targetConcerns: true,
       },
     });
 
@@ -188,6 +276,14 @@ export const updateProduct = async (req: Request, res: Response) => {
 export const deleteProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+
+    // Delete associated records first
+    await db.productSkinType.deleteMany({
+      where: { productId: id },
+    });
+    await db.productSkinConcern.deleteMany({
+      where: { productId: id },
+    });
 
     await db.product.delete({
       where: { id },
