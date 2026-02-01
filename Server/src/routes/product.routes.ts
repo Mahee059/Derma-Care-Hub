@@ -7,7 +7,7 @@ import { upload } from "../middlewares/file-uploader.middlwares";
  
 
 //multer uploader 
-const uploader = upload
+const uploader = upload 
 
 const router = express.Router();
 
