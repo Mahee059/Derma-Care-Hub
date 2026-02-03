@@ -1,21 +1,21 @@
 import multer from "multer";
-import fs from 'fs'
+import fs from "fs";
+import path from "path";
 
-export const upload = () => {
+const uploadDir = path.join(process.cwd(), "uploads");
 
-  if (!fs.existsSync('uploads')) { 
-    fs.mkdirSync('uploads',{recursive:true})
-     
-   }
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
-  const storage = multer.diskStorage({
-    destination:function(req,file,cb){
-      cb(null,'uploads/')
-    },
-    filename:function(req,file,cb){
-      const fileName = file.fieldname + '-'  + Date.now()  + '-' + file.originalname
-      cb(null,fileName)
-    }
-  })
-  return multer({ storage});
-};
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (_req, file, cb) => {
+    const fileName = `${Date.now()}-${file.originalname}`;
+    cb(null, fileName);
+  },
+});
+
+export const upload = multer({ storage });
