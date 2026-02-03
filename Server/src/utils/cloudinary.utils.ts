@@ -1,6 +1,7 @@
 import cloudinary from "../config/cloudinary.config"; 
-import CustomError from "../middlewares/error-handler.middleware";
+
 import fs  from 'fs'
+import CustomError from "../middlewares/error-handler.middlewares";
 
 
 export const uploadFile = async (path: string, dir: string = '/') => {

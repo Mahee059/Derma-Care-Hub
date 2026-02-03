@@ -36,8 +36,18 @@ enum SkinConcern {
   REDNESS
   UNEVEN_TEXTURE
 }
- 
 
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum NotificationType {
+  APPOINTMENT
+  CHAT
+  SYSTEM
+}
 
 model User {
   id              String              @id @default(uuid())
@@ -55,7 +65,12 @@ model User {
   skinAnalyses    SkinAnalysis[]
   routines        Routine[]   
   progressLogs    ProgressLog[]
-
+   appointmentsAsUser   Appointment[]       @relation("UserAppointments")
+  appointmentsAsDerm   Appointment[]       @relation("DermatologistAppointments")
+  chatsAsUser          Chat[]              @relation("UserChats")
+  chatsAsDermatologist Chat[]              @relation("DermatologistChats")
+  sentMessages         Message[]           @relation("SentMessages")
+  notifications        Notification[]
 }
 
 
@@ -159,4 +174,50 @@ model ProgressLog {
   concerns  SkinConcern
   rating    Int // Scale of 1-5
   createdAt DateTime    @default(now())
+} 
+
+model Appointment {
+  id              String            @id @default(uuid())
+  userId          String
+  user            User              @relation("UserAppointments", fields: [userId], references: [id], onDelete: Cascade)
+  dermatologistId String
+  dermatologist   User              @relation("DermatologistAppointments", fields: [dermatologistId], references: [id], onDelete: Cascade)
+  date            DateTime
+  status          AppointmentStatus @default(PENDING)
+  notes           String?           @db.Text
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model Chat {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation("UserChats", fields: [userId], references: [id], onDelete: Cascade)
+  dermatologistId String
+  dermatologist   User      @relation("DermatologistChats", fields: [dermatologistId], references: [id], onDelete: Cascade)
+  messages        Message[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  chatId    String
+  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  content   String   @db.Text
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message   String           @db.Text
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
 }
