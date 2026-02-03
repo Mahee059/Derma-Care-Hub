@@ -17,10 +17,14 @@ export const getPatients = async (req: Request, res: Response) => {
             Concerns: true,
           },
         },
+        progressLogs: {
+          orderBy: { createdAt: "desc" },
+          take: 1, 
+        },
       },
     });
 
-    res.json({
+    res.status(200).json({
       success: true,
       patients,
     });
@@ -33,6 +37,9 @@ export const getPatients = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * GET SINGLE PATIENT DETAILS
+ */
 export const getPatientDetails = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -46,18 +53,20 @@ export const getPatientDetails = async (req: Request, res: Response) => {
             Concerns: true,
           },
         },
+        progressLogs: {
+          orderBy: { createdAt: "desc" },
+        },
       },
     });
 
     if (!patient) {
-      res.status(404).json({
+      return res.status(404).json({
         success: false,
         message: "Patient not found",
       });
-      return;
     }
 
-    res.json({
+    res.status(200).json({
       success: true,
       patient,
     });
@@ -70,19 +79,21 @@ export const getPatientDetails = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * DERMATOLOGIST DASHBOARD STATS
+ */
 export const getDermatologistStats = async (req: Request, res: Response) => {
   try {
     const [
       totalPatients,
       newPatientsThisMonth,
       pendingAssessments,
+      totalProgressLogs,
     ] = await Promise.all([
       db.user.count({
         where: {
           role: "USER",
-          skinProfile: {
-            isNot: null,
-          },
+          skinProfile: { isNot: null },
         },
       }),
       db.user.count({
@@ -104,14 +115,16 @@ export const getDermatologistStats = async (req: Request, res: Response) => {
           },
         },
       }),
+      db.progressLog.count(),
     ]);
 
-    res.json({
+    res.status(200).json({
       success: true,
       stats: {
         totalPatients,
         newPatientsThisMonth,
         pendingAssessments,
+        totalProgressLogs,
       },
     });
   } catch (error) {
@@ -123,26 +136,56 @@ export const getDermatologistStats = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * RECENT ACTIVITY (NO ROUTINES)
+ */
 export const getRecentActivity = async (req: Request, res: Response) => {
   try {
-    const assessments = await db.skinProfile.findMany({
-      take: 10,
-      orderBy: { lastAssessment: "desc" },
-      include: {
-        user: true,
-      },
-    });
+    const [assessments, progressLogs] = await Promise.all([
+      db.skinProfile.findMany({
+        take: 5,
+        orderBy: { lastAssessment: "desc" },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      }),
+      db.progressLog.findMany({
+        take: 5,
+        orderBy: { createdAt: "desc" },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      }),
+    ]);
 
-    const activities = assessments.map((a) => ({
-      type: "assessment_completed",
-      date: a.lastAssessment,
-      patient: a.user.name,
-      details: "Updated skin profile",
-    }));
+    const activities = [
+      ...assessments.map((a) => ({
+        type: "assessment_completed",
+        date: a.lastAssessment,
+        patient: a.user.name,
+        details: "Updated skin profile",
+      })),
+      ...progressLogs.map((p) => ({
+        type: "progress_update",
+        date: p.createdAt,
+        patient: p.user.name,
+        details: "Added progress log",
+      })),
+    ].sort((a, b) => b.date.getTime() - a.date.getTime());
 
     res.status(200).json({
       success: true,
-      activities,
+      activities: activities.slice(0, 10),
     });
   } catch (error) {
     console.error("Get recent activity error:", error);
