@@ -8,7 +8,7 @@ import skinProfileRoutes from "./routes/skinProfile.routes";
 import productRoutes from "./routes/product.routes";
 import appointmentRoutes from "./routes/appointment.routes";
 import notificationsRoutes from "./routes/notification.routes";
-
+import dermotologistRoutes from "./routes/dermotologist.routes";
 
 dotenv.config();
 
@@ -33,6 +33,7 @@ app.use("/api/skinProfile", skinProfileRoutes)
 app.use("api/product", productRoutes);
 app.use("/api/appointment", appointmentRoutes);
 app.use("/api/notification", notificationsRoutes);
+app.use("/api/dermotologist", dermotologistRoutes);
 
 
 // 404 Handler
