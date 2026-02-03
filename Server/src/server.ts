@@ -7,7 +7,7 @@ import userRoutes from "./routes/user.routes";
 import skinProfileRoutes from "./routes/skinProfile.routes";
 import productRoutes from "./routes/product.routes";
 import appointmentRoutes from "./routes/appointment.routes";
-
+import notificationsRoutes from "./routes/notification.routes";
 
 
 dotenv.config();
@@ -31,7 +31,8 @@ app.use("/api/auth", authRoutes); // ✅ authRoutes now defined
 app.use("/api/users", userRoutes);
 app.use("/api/skinProfile", skinProfileRoutes)
 app.use("api/product", productRoutes);
-app.use("/api/appointments", appointmentRoutes);
+app.use("/api/appointment", appointmentRoutes);
+app.use("/api/notification", notificationsRoutes);
 
 
 // 404 Handler
