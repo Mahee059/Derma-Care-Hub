@@ -1,6 +1,6 @@
 import express from "express";
 import { authMiddleware, authorize } from "../middlewares/auth.middleware";
-import { getDermatologistStats, getPatientDetails, getPatients, getRecentActivity } from "../controllers/dermotologist.controllers";
+import { getDermatologistStats, getPatientDetails, getPatients, getRecentActivity } from "../controllers/dermotologist.controller";
 
 
 const router = express.Router();

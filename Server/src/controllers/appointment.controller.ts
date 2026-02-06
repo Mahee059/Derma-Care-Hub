@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { db } from "../lib/prisma";
 import { AppointmentStatus } from "@prisma/client";
-import { createNotification } from "./notification.controllers";
+import { createNotification } from "./notification.controller";
 
 
 interface AuthRequest extends Request {

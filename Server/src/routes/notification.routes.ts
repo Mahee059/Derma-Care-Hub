@@ -1,6 +1,6 @@
 import express from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
-import { deleteNotification, getNotifications, getUnreadNotificationsCount, markAllNotificationsAsRead, markNotificationAsRead } from "../controllers/notification.controllers";
+import { deleteNotification, getNotifications, getUnreadNotificationsCount, markAllNotificationsAsRead, markNotificationAsRead } from "../controllers/notification.controller";
 
 
 

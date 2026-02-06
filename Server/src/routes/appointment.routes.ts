@@ -1,6 +1,6 @@
 import express from "express";
 
-import { createAppointment, deleteAppointment, getAppointments, updateAppointmentStatus } from "../controllers/appointment.controllers";
+import { createAppointment, deleteAppointment, getAppointments, updateAppointmentStatus } from "../controllers/appointment.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 
 const router = express.Router();
