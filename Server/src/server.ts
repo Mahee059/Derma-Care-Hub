@@ -11,7 +11,7 @@ import notificationsRoutes from "./routes/notification.routes";
 import dermotologistRoutes from "./routes/dermotologist.routes";
 import progressRoutes from "./routes/dermotologist.routes";
 import routineRoutes from "./routes/routine.routes";
-
+import chatRoutes from "./routes/chat.routes";
 
 
 
@@ -43,6 +43,7 @@ app.use("/api/notification", notificationsRoutes);
 app.use("/api/dermotologist", dermotologistRoutes);
 app.use("/api/progress", progressRoutes);
 app.use("/api/routine", routineRoutes);
+app.use("/api/chat", chatRoutes);
 
 // 404 Handler
 app.use((_req, res) => {
