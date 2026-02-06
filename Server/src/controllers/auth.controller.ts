@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { db } from "../lib/prisma";
-import { Role } from "@prisma/client";
+import { Role } from "../types/enum.types";
+
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 const JWT_EXPIRES_IN = "7d";

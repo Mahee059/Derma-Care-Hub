@@ -10,6 +10,12 @@ import appointmentRoutes from "./routes/appointment.routes";
 import notificationsRoutes from "./routes/notification.routes";
 import dermotologistRoutes from "./routes/dermotologist.routes";
 import progressRoutes from "./routes/dermotologist.routes";
+import routineRoutes from "./routes/routine.routes";
+
+
+
+
+
 
 dotenv.config();
 
@@ -36,6 +42,7 @@ app.use("/api/appointment", appointmentRoutes);
 app.use("/api/notification", notificationsRoutes);
 app.use("/api/dermotologist", dermotologistRoutes);
 app.use("/api/progress", progressRoutes);
+app.use("/api/routine", routineRoutes);
 
 // 404 Handler
 app.use((_req, res) => {
