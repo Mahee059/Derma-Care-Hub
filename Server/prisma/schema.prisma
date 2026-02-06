@@ -10,7 +10,7 @@ generator client {
 
 enum Role {
   USER
-  DERMATOLOGIST
+  DERMATOLOGISTS
   ADMIN
 }
 

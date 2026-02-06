@@ -8,11 +8,12 @@ import skinProfileRoutes from "./routes/skinProfile.routes";
 import productRoutes from "./routes/product.routes";
 import appointmentRoutes from "./routes/appointment.routes";
 import notificationsRoutes from "./routes/notification.routes";
-import dermotologistRoutes from "./routes/dermotologist.routes";
-import progressRoutes from "./routes/dermotologist.routes";
+import dermotologistRoutes from "./routes/dermatologist.routes";
+import progressRoutes from "./routes/dermatologist.routes";
 import routineRoutes from "./routes/routine.routes";
 import chatRoutes from "./routes/chat.routes";
 import AIRoutes from "./routes/AI.routes"
+import adminRoutes from "./routes/admin.routes"
 
 
 
@@ -46,6 +47,7 @@ app.use("/api/progress", progressRoutes);
 app.use("/api/routine", routineRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/AI", AIRoutes) 
+app.use("/api/admin", adminRoutes) 
 
 
 
