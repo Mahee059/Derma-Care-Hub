@@ -1,6 +1,6 @@
 import express from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
-import { getProductRecommendations } from "../controllers/AI.controllers";
+import { getProductRecommendations } from "../controllers/AI.controller";
 
 
 const router = express.Router();

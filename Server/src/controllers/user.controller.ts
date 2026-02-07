@@ -9,7 +9,7 @@ export const getDermatologists = async (req: Request, res: Response) => {
   try {
     const users = await db.user.findMany({
       where: {
-        role: Role.DERMATOLOGIST,
+        role: Role.DERMATOLOGISTS,
       },
       select: {
         id: true,
