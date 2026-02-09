@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { db } from "../lib/prisma";
 import { Role, DermatologistStatus } from "@prisma/client";
+import { createNotification } from "./notification.controller";
+
 
 
 export const getAllUsers = async (req: Request, res: Response) => {
