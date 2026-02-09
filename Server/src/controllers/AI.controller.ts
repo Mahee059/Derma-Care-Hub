@@ -6,7 +6,13 @@ interface AuthRequest extends Request {
   user?: any;
 }
 
-const HUGGING_FACE_API = "https://huggingface.co/deepseek-ai/DeepSeek-V3-0324";
+// ✅ Type definition for AI response
+interface AIResult {
+  generated_text: string;
+}
+
+const HUGGING_FACE_API =
+  "https://huggingface.co/deepseek-ai/DeepSeek-V3-0324";
 
 export const getProductRecommendations = async (
   req: AuthRequest,
@@ -36,7 +42,7 @@ export const getProductRecommendations = async (
       return;
     }
 
-    // Get matching products from database based on skin profile
+    // Get matching products
     const products = await db.product.findMany({
       where: {
         suitableSkinTypes: {
@@ -68,14 +74,13 @@ export const getProductRecommendations = async (
       const concerns = skinProfile.Concerns.map((c) => c.concern).join(", ");
       const allergies = skinProfile.allergies || "None";
 
-      // Generate input text for the model
       const input = `Generate skincare recommendations for someone with:
-      Skin Types: ${skinTypes}
-      Skin Concerns: ${concerns}
-      Allergies: ${allergies}
-      Goals: ${skinProfile.goals}
+Skin Types: ${skinTypes}
+Skin Concerns: ${concerns}
+Allergies: ${allergies}
+Goals: ${skinProfile.goals}
 
-      Please provide specific recommendations for their skincare routine.`;
+Please provide specific recommendations for their skincare routine.`;
 
       // Call Hugging Face API
       const response = await fetch(HUGGING_FACE_API, {
@@ -84,35 +89,45 @@ export const getProductRecommendations = async (
           Authorization: `Bearer ${process.env.HUGGING_FACE_API_KEY}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ inputs: input, max_length: 500 }),
+        body: JSON.stringify({
+          inputs: input,
+          max_length: 500,
+        }),
       });
 
       if (!response.ok) {
-        throw new Error(`Hugging Face API error: ${response.statusText}`);
+        throw new Error(
+          `Hugging Face API error: ${response.statusText}`
+        );
       }
 
-      const result = await response.json();
+      // ✅ FIX — Proper typing
+      const result = (await response.json()) as
+        | AIResult
+        | AIResult[];
+
       aiRecommendations = Array.isArray(result)
         ? result[0].generated_text
         : result.generated_text;
     } catch (aiError) {
       console.error("AI recommendations error:", aiError);
-      // Provide a fallback response when AI service is unavailable
+
+      // Fallback response
       aiRecommendations = `Based on your skin profile, here are some general recommendations:
 
 1. For your ${skinProfile.SkinType[0].type.toLowerCase()} skin type:
    - Focus on products that maintain skin balance
-   - Use gentle, non-irritating formulations
+   - Use gentle formulations
 
 2. To address your concerns (${skinProfile.Concerns.map((c) =>
         c.concern.toLowerCase()
       ).join(", ")}):
-   - Look for products with targeted active ingredients
-   - Follow a consistent skincare routine
+   - Look for targeted active ingredients
+   - Maintain consistency
 
-3. Consider your specific goals: ${skinProfile.goals}
+3. Consider your goals: ${skinProfile.goals}
 
-The products shown below are specifically matched to your skin type and concerns.`;
+The products below match your skin profile.`;
     }
 
     res.json({
@@ -122,6 +137,7 @@ The products shown below are specifically matched to your skin type and concerns
     });
   } catch (error) {
     console.error("AI recommendations error:", error);
+
     res.status(500).json({
       success: false,
       message:
@@ -129,3 +145,4 @@ The products shown below are specifically matched to your skin type and concerns
     });
   }
 };
+

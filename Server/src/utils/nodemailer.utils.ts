@@ -38,7 +38,7 @@ export const sendMail = async ({
 }:IMailOption) => {
   try {
     let messageOptions: Record<string, any> = {
-      from: `Travel Management System<${process.env.SMTP_USER}>`,
+      from: `Derma_Care_Hub<${process.env.SMTP_USER}>`,
       to: to,
       subject,
       html,
