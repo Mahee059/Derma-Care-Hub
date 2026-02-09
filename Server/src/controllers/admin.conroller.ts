@@ -3,8 +3,6 @@ import { db } from "../lib/prisma";
 import { Role, DermatologistStatus } from "@prisma/client";
 import { createNotification } from "./notification.controller";
 
-
-
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
     const users = await db.user.findMany({
@@ -131,7 +129,10 @@ export const getAdminStats = async (req: Request, res: Response) => {
   }
 };
 
-export const getPendingDermatologists = async (req: Request, res: Response) => {
+export const getPendingDermatologists = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const pendingDermatologists = await db.user.findMany({
       where: {
@@ -161,7 +162,10 @@ export const getPendingDermatologists = async (req: Request, res: Response) => {
   }
 };
 
-export const approveDermatologist = async (req: Request, res: Response) => {
+export const approveDermatologist = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -213,17 +217,15 @@ export const approveDermatologist = async (req: Request, res: Response) => {
       notificationMessage
     );
 
-    // Send email notification
-    await sendApprovalEmail(
-      dermatologist.email,
-      dermatologist.name,
-      dermatologist.dermatologistId!,
-      status
+    // Email disabled for now
+    console.log(
+      `Dermatologist ${dermatologist.name} status updated to ${status}`
     );
+
     res.json({
       success: true,
       user: updatedUser,
-      message: `Dermatologist ${status.toLowerCase()} successfully. Email notification sent.`,
+      message: `Dermatologist ${status.toLowerCase()} successfully.`,
     });
   } catch (error) {
     console.error("Approve dermatologist error:", error);

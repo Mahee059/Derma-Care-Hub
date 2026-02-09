@@ -6,7 +6,7 @@ interface AuthRequest extends Request {
   user?: any;
 }
 
-// ✅ Type definition for AI response
+//  Type definition for AI response
 interface AIResult {
   generated_text: string;
 }
