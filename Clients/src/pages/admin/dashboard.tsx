@@ -75,7 +75,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchDashboardData();
-  }, [fetchDashboardData]); // Now safe to include
+  }, [fetchDashboardData]);
 
   const handleProductSubmit = async (
     values: ProductFormValues & { image?: File }
@@ -132,7 +132,8 @@ export default function AdminDashboard() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8 flex flex-col gap-2">
-        <h1 className="text-2xl font-bold text-transparent md:text-3xl bg-gradient-to-r from-primary via-pink-500 to-amber-500 bg-clip-text">
+        {/* Fixed line below: changed bg-gradient-to-r to bg-linear-to-r */}
+        <h1 className="text-2xl font-bold text-transparent md:text-3xl bg-linear-to-r from-primary via-pink-500 to-amber-500 bg-clip-text">
           Admin Dashboard
         </h1>
         <p className="text-muted-foreground">
