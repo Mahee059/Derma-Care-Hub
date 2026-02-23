@@ -105,7 +105,7 @@ export default function DermatologistDashboard() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8 flex flex-col gap-2">
-        <h1 className="text-2xl font-bold text-transparent md:text-3xl bg-gradient-to-r from-primary via-pink-500 to-amber-500 bg-clip-text">
+        <h1 className="text-2xl font-bold text-transparent md:text-3xl bg-linear-to-r from-primary via-pink-500 to-amber-500 bg-clip-text">
           Dermatologist Dashboard
         </h1>
         <p className="text-muted-foreground">
@@ -147,11 +147,13 @@ export default function DermatologistDashboard() {
             <CardTitle className="font-semibold text-primary">
               Recent Patients
             </CardTitle>
-            <CardDescription>View and manage your patient list</CardDescription>
+            <CardDescription>
+              View and manage your patient list
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center mb-4">
-              <div className="relative flex-grow">
+              <div className="relative grow">
                 <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   type="search"
@@ -204,7 +206,9 @@ export default function DermatologistDashboard() {
             </div>
 
             <Button variant="outline" className="mt-4 w-full" asChild>
-              <Link to="/dermatologist/patients">View All Patients</Link>
+              <Link to="/dermatologist/patients">
+                View All Patients
+              </Link>
             </Button>
           </CardContent>
         </Card>
@@ -241,7 +245,9 @@ export default function DermatologistDashboard() {
                       {getActivityIcon(activity.type)}
                     </div>
                     <div className="flex-1 space-y-1">
-                      <p className="text-sm font-medium">{activity.details}</p>
+                      <p className="text-sm font-medium">
+                        {activity.details}
+                      </p>
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-muted-foreground">
                           {activity.patient}

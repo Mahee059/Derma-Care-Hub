@@ -1,21 +1,20 @@
 {
   "compilerOptions": {
-    /* Target & Module Settings */
-    "target": "ESNext",
+    "target": "ES6",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "module": "ESNext",
-    "moduleResolution": "node",
-    
-    /* The Fix for Line 7 */
-    "strict": true,
+    "moduleResolution": "Node",
 
-    /* Additional Safety & Compatibility */
+    "jsx": "react-jsx",
+
+    "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
     "resolveJsonModule": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"]
+    "isolatedModules": true,
+    "noEmit": true,
+
+    "forceConsistentCasingInFileNames": true   // ✅ Added this line
   },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "include": ["src"]
 }
