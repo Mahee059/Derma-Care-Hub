@@ -13,7 +13,7 @@ import {
 } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
-;
+
 import {
   Select,
   SelectContent,
@@ -97,7 +97,7 @@ export default function Patients() {
   return (
     <div className="container px-4 py-8 mx-auto">
       <div className="flex flex-col gap-2 mb-8">
-        <h1 className="text-2xl font-bold text-transparent md:text-3xl bg-gradient-to-r from-pink-500 to-amber-500 bg-clip-text">
+        <h1 className="text-2xl font-bold text-transparent md:text-3xl bg-linear-to-r from-pink-500 to-amber-500 bg-clip-text">
           All Patients
         </h1>
         <p className="text-foreground/70">
@@ -107,7 +107,7 @@ export default function Patients() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-transparent bg-gradient-to-r from-pink-500 to-amber-500 bg-clip-text">
+          <CardTitle className="text-transparent bg-linear-to-r from-pink-500 to-amber-500 bg-clip-text">
             Patient List
           </CardTitle>
           <CardDescription>
@@ -132,7 +132,7 @@ export default function Patients() {
                 value={filterBySkinType}
                 onValueChange={setFilterBySkinType}
               >
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-45">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -146,7 +146,7 @@ export default function Patients() {
               </Select>
 
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-45">
                   <div className="flex items-center gap-2">
                     <ArrowUpDown className="w-4 h-4" />
                     <span>Sort By</span>

@@ -3,19 +3,12 @@ import { AppContext } from "../../context/AppContext";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Card, CardContent } from "../../components/ui/card";
-import { Search, Sparkles, ArrowUpDown, DollarSign } from "lucide-react";
+import { Search, Sparkles, ArrowUpDown, DollarSign, ExternalLink } from "lucide-react";
 import { ProductData } from "../../lib/types";
 
 import { toast } from "sonner";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "../../components/ui/select";
-
+import { Select, SelectContent, SelectItem, SelectTrigger } from "../../components/ui/select";
 import { Badge } from "../../components/ui/badge";
-import { ExternalLink } from "lucide-react";
 import productService from "../../api/services/product.service";
 
 // Skin types
@@ -56,18 +49,10 @@ export default function ProductExplorer() {
         setIsLoading(true);
         setIsLocalLoading(true);
 
-        const params: {
-          skinType?: string;
-          concerns?: string[];
-        } = {};
+        const params: { skinType?: string; concerns?: string[] } = {};
 
-        if (selectedSkinType) {
-          params.skinType = selectedSkinType;
-        }
-
-        if (selectedConcerns.length > 0) {
-          params.concerns = selectedConcerns;
-        }
+        if (selectedSkinType) params.skinType = selectedSkinType;
+        if (selectedConcerns.length > 0) params.concerns = selectedConcerns;
 
         const data = await productService.getProducts(params);
         setProducts(data);
@@ -87,7 +72,6 @@ export default function ProductExplorer() {
   useEffect(() => {
     let result = [...products];
 
-    // Apply search filter
     if (searchTerm) {
       result = result.filter(
         (product) =>
@@ -97,14 +81,12 @@ export default function ProductExplorer() {
       );
     }
 
-    // Apply sustainability filter
     if (minSustainability > 0) {
       result = result.filter(
         (product) => product.sustainabilityScore >= minSustainability
       );
     }
 
-    // Apply sorting
     if (sortBy === "price-low") {
       result = [...result].sort((a, b) => (a.price || 0) - (b.price || 0));
     } else if (sortBy === "price-high") {
@@ -131,7 +113,7 @@ export default function ProductExplorer() {
     <div className="container px-4 py-8 mx-auto">
       <div className="flex flex-col gap-2 mb-8 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-transparent md:text-3xl bg-gradient-to-r from-pink-500 to-amber-500 bg-clip-text">
+          <h1 className="text-2xl font-bold text-transparent md:text-3xl bg-linear-to-r from-pink-500 to-amber-500 bg-clip-text">
             Product Explorer
           </h1>
           <p className="text-foreground/70">
@@ -142,7 +124,7 @@ export default function ProductExplorer() {
 
       {/* Search and Filter Bar */}
       <div className="flex flex-col gap-4 mb-8 md:flex-row md:items-center">
-        <div className="relative flex-grow">
+        <div className="relative grow">
           <Search className="absolute w-5 h-5 transform -translate-y-1/2 left-3 top-1/2 text-foreground/50" />
           <Input
             type="search"
@@ -155,7 +137,7 @@ export default function ProductExplorer() {
 
         <div className="flex flex-wrap gap-2">
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-45">
               <div className="flex items-center gap-2">
                 <ArrowUpDown className="w-4 h-4" />
                 <span>Sort By</span>
@@ -172,9 +154,7 @@ export default function ProductExplorer() {
       </div>
 
       {/* Active Filters */}
-      {(selectedSkinType ||
-        selectedConcerns.length > 0 ||
-        minSustainability > 0) && (
+      {(selectedSkinType || selectedConcerns.length > 0 || minSustainability > 0) && (
         <div className="flex flex-wrap gap-2 mb-6">
           {selectedSkinType && (
             <Badge variant="secondary" className="flex items-center gap-1">
@@ -184,11 +164,7 @@ export default function ProductExplorer() {
           )}
 
           {selectedConcerns.map((concernId) => (
-            <Badge
-              key={concernId}
-              variant="secondary"
-              className="flex items-center gap-1"
-            >
+            <Badge key={concernId} variant="secondary" className="flex items-center gap-1">
               {skinConcerns.find((c) => c.id === concernId)?.label}
               <button onClick={() => toggleConcern(concernId)}>×</button>
             </Badge>
@@ -226,8 +202,7 @@ export default function ProductExplorer() {
           <Search className="w-12 h-12 mb-4 text-foreground/30" />
           <h3 className="mb-2 text-xl font-semibold">No Products Found</h3>
           <p className="max-w-md text-foreground/70">
-            We couldn't find any products matching your criteria. Try adjusting
-            your filters or search term.
+            We couldn't find any products matching your criteria. Try adjusting your filters or search term.
           </p>
         </div>
       ) : (
@@ -235,16 +210,10 @@ export default function ProductExplorer() {
           {filteredProducts.map((product) => (
             <Card
               key={product.id}
-              className={`overflow-hidden transition-all hover:shadow-md ${
-                product.externalUrl ? "cursor-pointer" : ""
-              }`}
+              className={`overflow-hidden transition-all hover:shadow-md ${product.externalUrl ? "cursor-pointer" : ""}`}
               onClick={() => {
                 if (product.externalUrl) {
-                  window.open(
-                    product.externalUrl,
-                    "_blank",
-                    "noopener,noreferrer"
-                  );
+                  window.open(product.externalUrl, "_blank", "noopener,noreferrer");
                 }
               }}
             >
@@ -272,17 +241,13 @@ export default function ProductExplorer() {
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <h3 className="font-bold">{product.name}</h3>
-                    <p className="text-sm font-semibold text-foreground/60">
-                      {product.brand}
-                    </p>
+                    <p className="text-sm font-semibold text-foreground/60">{product.brand}</p>
                   </div>
                   <Badge className="flex items-center text-sm">
                     <DollarSign className="w-4 h-4" /> {product.price}
                   </Badge>
                 </div>
-                <p className="mb-3 text-sm line-clamp-2">
-                  {product.description}
-                </p>
+                <p className="mb-3 text-sm line-clamp-2">{product.description}</p>
                 {product.externalUrl && (
                   <p className="flex items-center gap-1 text-xs text-primary">
                     <ExternalLink className="w-3 h-3" />

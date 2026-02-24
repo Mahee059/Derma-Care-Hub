@@ -36,17 +36,13 @@ import { routineFormSchema, RoutineFormValues } from "../../lib/validators";
 import routineService from "../../api/services/routine.service";
 import RoutineCard from "../../components/routines/routine.card";
 
-
 export default function Routines() {
   const { setIsLoading } = useContext(AppContext);
   const [routines, setRoutines] = useState<RoutineData[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLocalLoading, setIsLocalLoading] = useState(true);
-  const [editingRoutine, setEditingRoutine] = useState<RoutineData | null>(
-    null
-  );
+  const [editingRoutine, setEditingRoutine] = useState<RoutineData | null>(null);
 
-  // Initialize form
   const form = useForm<RoutineFormValues>({
     resolver: zodResolver(routineFormSchema),
     defaultValues: {
@@ -55,7 +51,6 @@ export default function Routines() {
     },
   });
 
-  // Fetch routines
   useEffect(() => {
     const fetchRoutines = async () => {
       try {
@@ -74,7 +69,6 @@ export default function Routines() {
     fetchRoutines();
   }, [setIsLoading]);
 
-  // Handle edit routine
   const handleEditRoutine = (routine: RoutineData) => {
     setEditingRoutine(routine);
     form.reset({
@@ -84,22 +78,14 @@ export default function Routines() {
     setIsDialogOpen(true);
   };
 
-  // Create or update routine
   const onSubmit = async (values: RoutineFormValues) => {
     try {
       setIsLoading(true);
       if (editingRoutine) {
-        // Update existing routine
-        const updatedRoutine = await routineService.updateRoutine(
-          editingRoutine.id,
-          values
-        );
-        setRoutines(
-          routines.map((r) => (r.id === editingRoutine.id ? updatedRoutine : r))
-        );
+        const updatedRoutine = await routineService.updateRoutine(editingRoutine.id, values);
+        setRoutines(routines.map((r) => (r.id === editingRoutine.id ? updatedRoutine : r)));
         toast.success("Routine updated successfully!");
       } else {
-        // Create new routine
         const newRoutine = await routineService.createRoutine(values);
         setRoutines([...routines, newRoutine]);
         toast.success("Routine created successfully!");
@@ -109,15 +95,12 @@ export default function Routines() {
       form.reset();
     } catch (error) {
       console.error("Error saving routine:", error);
-      toast.error(
-        editingRoutine ? "Failed to update routine" : "Failed to create routine"
-      );
+      toast.error(editingRoutine ? "Failed to update routine" : "Failed to create routine");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Delete routine
   const handleDeleteRoutine = async (id: string) => {
     try {
       setIsLoading(true);
@@ -132,19 +115,14 @@ export default function Routines() {
     }
   };
 
-  // Handle dialog close
   const handleDialogClose = (open: boolean) => {
     if (!open) {
       setEditingRoutine(null);
-      form.reset({
-        name: "",
-        type: "",
-      });
+      form.reset({ name: "", type: "" });
     }
     setIsDialogOpen(open);
   };
 
-  // Routine types
   const routineTypes = [
     { value: "Morning", label: "Morning Routine" },
     { value: "Night", label: "Night Routine" },
@@ -167,13 +145,14 @@ export default function Routines() {
     <div className="container px-4 py-8 mx-auto">
       <div className="flex flex-col gap-2 mb-8 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-transparent md:text-3xl bg-gradient-to-r from-pink-500 to-amber-500 bg-clip-text">
+          <h1 className="text-2xl font-bold text-transparent md:text-3xl bg-linear-to-r from-pink-500 to-amber-500 bg-clip-text">
             My Skincare Routines
           </h1>
           <p className="text-foreground/70">
             Create and manage your personalized skincare regimens
           </p>
         </div>
+
         <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
           <DialogTrigger asChild>
             <Button>
@@ -183,9 +162,7 @@ export default function Routines() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>
-                {editingRoutine ? "Edit Routine" : "Create New Routine"}
-              </DialogTitle>
+              <DialogTitle>{editingRoutine ? "Edit Routine" : "Create New Routine"}</DialogTitle>
               <DialogDescription>
                 {editingRoutine
                   ? "Update your skincare routine"
@@ -193,10 +170,7 @@ export default function Routines() {
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
-              >
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                   control={form.control}
                   name="name"
@@ -204,10 +178,7 @@ export default function Routines() {
                     <FormItem>
                       <FormLabel>Routine Name</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="E.g., Brightening Morning Routine"
-                          {...field}
-                        />
+                        <Input placeholder="E.g., Brightening Morning Routine" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -219,10 +190,7 @@ export default function Routines() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Routine Type</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select a routine type" />
@@ -241,9 +209,7 @@ export default function Routines() {
                   )}
                 />
                 <DialogFooter>
-                  <Button type="submit">
-                    {editingRoutine ? "Update Routine" : "Create Routine"}
-                  </Button>
+                  <Button type="submit">{editingRoutine ? "Update Routine" : "Create Routine"}</Button>
                 </DialogFooter>
               </form>
             </Form>

@@ -10,7 +10,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center space-x-2">
               <Sparkles className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold">GlowGuide</span>
+              <span className="text-xl font-bold">Derma Care Hub</span>
             </div>
             <p className="mt-4 text-sm text-foreground/70">
               Your personal guide to achieving healthy, glowing skin. We provide
@@ -150,15 +150,15 @@ export default function Footer() {
 
         <div className="flex flex-col items-center pt-8 mt-8 border-t border-border md:flex-row md:justify-between md:items-center">
           <p className="text-xs text-foreground/70">
-            &copy; {new Date().getFullYear()} GlowGuide. All rights reserved.
+            &copy; {new Date().getFullYear()} Derma Care Hub. All rights reserved.
           </p>
           <div className="flex items-center mt-4 md:mt-0">
             <a
-              href="mailto:contact@glowguide.com"
+              href="mailto:contact@dermacarehub.com"
               className="flex items-center text-xs text-foreground/70 transition-colors hover:text-primary"
             >
               <Mail className="mr-1 h-4 w-4" />
-              contact@glowguide.com
+              contact@dermacarehub.com
             </a>
           </div>
         </div>

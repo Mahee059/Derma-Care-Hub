@@ -186,7 +186,7 @@ export default function ProgressTracker() {
     <div className="container px-4 py-8 mx-auto">
       <div className="flex flex-col gap-2 mb-8 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-transparent md:text-3xl bg-gradient-to-r from-pink-500 to-amber-500 bg-clip-text">Progress Tracker</h1>
+         <h1 className="text-2xl font-bold text-transparent md:text-3xl bg-linear-to-r from-pink-500 to-amber-500 bg-clip-text"> Progress Tracker </h1>
           <p className="text-foreground/70">
             Track your skin's improvement over time
           </p>
@@ -380,7 +380,7 @@ export default function ProgressTracker() {
       {/* View Log Dialog */}
       {viewingLog && (
         <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className= "sm:max-w-125">
             <DialogHeader>
               <DialogTitle>Progress Log Details</DialogTitle>
               <DialogDescription>

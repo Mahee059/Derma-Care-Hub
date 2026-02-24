@@ -5,7 +5,7 @@ import { Quote } from "lucide-react";
 const testimonials = [
   {
     quote:
-      "GlowGuide transformed my skincare routine. The personalized recommendations were spot on, and my skin has never looked better!",
+      "Derma Care Hub transformed my skincare routine. The personalized recommendations were spot on, and my skin has never looked better!",
     author: {
       name: "Sarah Johnson",
       role: "Beauty Enthusiast",
@@ -50,12 +50,12 @@ export function Testimonials() {
     <section className="py-20 bg-muted/30">
       <div className="container">
         <div className="max-w-3xl mx-auto mb-16 space-y-4 text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-transparent sm:text-4xl bg-gradient-to-r from-pink-500 to-amber-500 bg-clip-text">
+          <h2 className="text-3xl font-bold tracking-tight text-transparent sm:text-4xl bg-linear-to-r from-pink-500 to-amber-500 bg-clip-text">
             Loved by Skin Enthusiasts
           </h2>
           <p className="text-lg text-muted-foreground">
             Hear from our satisfied users who have transformed their skin with
-            GlowGuide.
+            Derma Care Hub.
           </p>
         </div>
 

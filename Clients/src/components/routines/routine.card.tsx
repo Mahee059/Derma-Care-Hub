@@ -51,7 +51,7 @@ export default function RoutineCard({
           alt={routine.name}
           className="object-cover w-full h-full"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-black/70 to-transparent"></div>
         <div className="absolute bottom-0 left-0 p-4">
           <span className="px-2 py-1 text-xs text-white rounded-full bg-primary/90">
             {routine.type}

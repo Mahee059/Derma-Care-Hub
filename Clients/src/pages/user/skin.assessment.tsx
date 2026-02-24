@@ -40,7 +40,6 @@ export default function SkinAssessment() {
   const [step, setStep] = useState(1);
   const totalSteps = 3;
 
-  // Initialize form with existing profile data if available
   const form = useForm<SkinAssessmentFormValues>({
     resolver: zodResolver(skinAssessmentSchema),
     defaultValues: {
@@ -51,7 +50,6 @@ export default function SkinAssessment() {
     },
   });
 
-  // Handle form submission
   const onSubmit = async (values: SkinAssessmentFormValues) => {
     try {
       setIsLoading(true);
@@ -63,11 +61,9 @@ export default function SkinAssessment() {
       };
 
       if (skinProfile) {
-        // Update existing profile
         response = await skinProfileService.updateSkinProfile(formattedValues);
         toast.success("Skin profile updated successfully!");
       } else {
-        // Create new profile
         response = await skinProfileService.createSkinProfile(formattedValues);
         toast.success("Skin assessment completed successfully!");
       }
@@ -77,14 +73,14 @@ export default function SkinAssessment() {
     } catch (error: unknown) {
       console.error("Error saving skin profile:", error);
       toast.error(
-        (error as { response?: { data?: { message?: string } } })?.response?.data?.message || "Failed to save your skin profile"
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+          "Failed to save your skin profile"
       );
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Next step handler
   const handleNextStep = async () => {
     let isValid = false;
 
@@ -105,41 +101,18 @@ export default function SkinAssessment() {
     }
   };
 
-  // Previous step handler
   const handlePreviousStep = () => {
     setStep(step - 1);
   };
 
-  // Skin type options
   const skinTypeOptions = [
-    {
-      value: "DRY",
-      label: "Dry",
-      description: "Skin feels tight, flaky, or rough",
-    },
-    {
-      value: "OILY",
-      label: "Oily",
-      description: "Skin looks shiny and feels greasy",
-    },
-    {
-      value: "COMBINATION",
-      label: "Combination",
-      description: "Oily T-zone with normal or dry cheeks",
-    },
-    {
-      value: "NORMAL",
-      label: "Normal",
-      description: "Neither too oily nor too dry",
-    },
-    {
-      value: "SENSITIVE",
-      label: "Sensitive",
-      description: "Easily irritated, red, or itchy",
-    },
+    { value: "DRY", label: "Dry", description: "Skin feels tight, flaky, or rough" },
+    { value: "OILY", label: "Oily", description: "Skin looks shiny and feels greasy" },
+    { value: "COMBINATION", label: "Combination", description: "Oily T-zone with normal or dry cheeks" },
+    { value: "NORMAL", label: "Normal", description: "Neither too oily nor too dry" },
+    { value: "SENSITIVE", label: "Sensitive", description: "Easily irritated, red, or itchy" },
   ];
 
-  // Skin concerns options
   const skinConcernsOptions = [
     { id: "ACNE", label: "Acne" },
     { id: "AGING", label: "Aging/Fine Lines" },
@@ -154,7 +127,7 @@ export default function SkinAssessment() {
   return (
     <div className="container max-w-3xl px-4 py-10 mx-auto">
       <div className="flex flex-col items-center mb-8 text-center">
-        <h1 className="mb-2 text-3xl font-bold text-transparent bg-gradient-to-r from-pink-500 to-amber-500 bg-clip-text">
+        <h1 className="mb-2 text-3xl font-bold text-transparent bg-linear-to-r from-pink-500 to-amber-500 bg-clip-text">
           {skinProfile ? "Update Skin Profile" : "Skin Assessment"}
         </h1>
         <p className="text-foreground/70">
@@ -163,7 +136,6 @@ export default function SkinAssessment() {
             : "Help us understand your skin to provide personalized recommendations"}
         </p>
 
-        {/* Progress indicator */}
         <div className="flex items-center w-full max-w-md gap-2 mt-6">
           {Array.from({ length: totalSteps }).map((_, index) => (
             <div
@@ -182,16 +154,14 @@ export default function SkinAssessment() {
       <Card className="border-muted">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            {/* Step 1: Skin Type */}
             {step === 1 && (
               <>
                 <CardHeader>
-                  <CardTitle className="text-transparent md:text-3xl bg-gradient-to-r from-pink-500 to-amber-500 bg-clip-text">
+                  <CardTitle className="text-transparent md:text-3xl bg-linear-to-r from-pink-500 to-amber-500 bg-clip-text">
                     What's your skin type?
                   </CardTitle>
                   <CardDescription>
-                    Choose the option that best describes your skin most of the
-                    time
+                    Choose the option that best describes your skin most of the time
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -214,12 +184,8 @@ export default function SkinAssessment() {
                                   </FormControl>
                                   <div className="flex-1 p-3 rounded-md hover:bg-muted">
                                     <FormLabel className="font-normal cursor-pointer">
-                                      <div className="font-medium">
-                                        {option.label}
-                                      </div>
-                                      <div className="text-sm text-foreground/70">
-                                        {option.description}
-                                      </div>
+                                      <div className="font-medium">{option.label}</div>
+                                      <div className="text-sm text-foreground/70">{option.description}</div>
                                     </FormLabel>
                                   </div>
                                 </FormItem>
@@ -235,16 +201,13 @@ export default function SkinAssessment() {
               </>
             )}
 
-            {/* Step 2: Skin Concerns */}
             {step === 2 && (
               <>
                 <CardHeader>
-                  <CardTitle className="text-transparent md:text-3xl bg-gradient-to-r from-pink-500 to-amber-500 bg-clip-text">
+                  <CardTitle className="text-transparent md:text-3xl bg-linear-to-r from-pink-500 to-amber-500 bg-clip-text">
                     What are your skin concerns?
                   </CardTitle>
-                  <CardDescription>
-                    Select all that apply to you
-                  </CardDescription>
+                  <CardDescription>Select all that apply to you</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <FormField
@@ -254,36 +217,21 @@ export default function SkinAssessment() {
                       <FormItem>
                         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                           {skinConcernsOptions.map((item) => (
-                            <FormItem
-                              key={item.id}
-                              className="flex items-start space-x-3 space-y-0"
-                            >
+                            <FormItem key={item.id} className="flex items-start space-x-3 space-y-0">
                               <FormControl>
                                 <Checkbox
                                   checked={field.value?.includes(item.id)}
                                   onCheckedChange={(checked) => {
-                                    const currentConcerns = [
-                                      ...(field.value || []),
-                                    ];
-
+                                    const currentConcerns = [...(field.value || [])];
                                     if (checked) {
-                                      field.onChange([
-                                        ...currentConcerns,
-                                        item.id,
-                                      ]);
+                                      field.onChange([...currentConcerns, item.id]);
                                     } else {
-                                      field.onChange(
-                                        currentConcerns.filter(
-                                          (concern) => concern !== item.id
-                                        )
-                                      );
+                                      field.onChange(currentConcerns.filter((c) => c !== item.id));
                                     }
                                   }}
                                 />
                               </FormControl>
-                              <FormLabel className="font-normal cursor-pointer">
-                                {item.label}
-                              </FormLabel>
+                              <FormLabel className="font-normal cursor-pointer">{item.label}</FormLabel>
                             </FormItem>
                           ))}
                         </div>
@@ -295,16 +243,13 @@ export default function SkinAssessment() {
               </>
             )}
 
-            {/* Step 3: Allergies & Goals */}
             {step === 3 && (
               <>
                 <CardHeader>
-                  <CardTitle className="text-transparent md:text-3xl bg-gradient-to-r from-pink-500 to-amber-500 bg-clip-text">
+                  <CardTitle className="text-transparent md:text-3xl bg-linear-to-r from-pink-500 to-amber-500 bg-clip-text">
                     Tell us more about you
                   </CardTitle>
-                  <CardDescription>
-                    Share any allergies and your skincare goals
-                  </CardDescription>
+                  <CardDescription>Share any allergies and your skincare goals</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <FormField
@@ -314,10 +259,7 @@ export default function SkinAssessment() {
                       <FormItem>
                         <FormLabel>Do you have any allergies?</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="E.g., fragrance, nuts, latex"
-                            {...field}
-                          />
+                          <Input placeholder="E.g., fragrance, nuts, latex" {...field} />
                         </FormControl>
                         <FormDescription>
                           List ingredients that cause reactions (optional)
@@ -336,13 +278,12 @@ export default function SkinAssessment() {
                         <FormControl>
                           <Textarea
                             placeholder="E.g., reduce acne, improve hydration, minimize fine lines"
-                            className="min-h-[100px]"
+                            className="min-h-25"
                             {...field}
                           />
                         </FormControl>
                         <FormDescription>
-                          Tell us what you want to achieve with your skincare
-                          routine
+                          Tell us what you want to achieve with your skincare routine
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -354,23 +295,14 @@ export default function SkinAssessment() {
 
             <CardFooter className="flex justify-between">
               {step > 1 ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handlePreviousStep}
-                >
+                <Button type="button" variant="outline" onClick={handlePreviousStep}>
                   Previous
                 </Button>
               ) : (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate("/user/dashboard")}
-                >
+                <Button type="button" variant="outline" onClick={() => navigate("/user/dashboard")}>
                   Cancel
                 </Button>
               )}
-
               <Button type="button" onClick={handleNextStep}>
                 {step === totalSteps
                   ? skinProfile

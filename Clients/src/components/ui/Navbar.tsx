@@ -57,30 +57,86 @@ export default function Navbar() {
 
     if (userData?.role === "USER") {
       return [
-        { to: "/user/dashboard", label: "Dashboard", icon: <Home className="mr-2 h-5 w-5" /> },
-        { to: "/user/skin-assessment", label: "Skin Assessment", icon: <Search className="mr-2 h-5 w-5" /> },
-        { to: "/user/routines", label: "My Routines", icon: <Calendar className="mr-2 h-5 w-5" /> },
-        { to: "/user/progress", label: "Progress Tracker", icon: <Camera className="mr-2 h-5 w-5" /> },
-        { to: "/user/products", label: "Products", icon: <Droplets className="mr-2 h-5 w-5" /> },
-        { to: "/user/ai-recommendations", label: "Ai", icon: <Bot className="mr-2 h-5 w-5" /> },
-        { to: "/user/chat", label: "Chat", icon: <MessageSquare className="mr-2 h-5 w-5" /> },
-        { to: "/user/appointments", label: "Appointments", icon: <Calendar className="mr-2 h-5 w-5" /> },
+        {
+          to: "/user/dashboard",
+          label: "Dashboard",
+          icon: <Home className="mr-2 h-5 w-5" />,
+        },
+        {
+          to: "/user/skin-assessment",
+          label: "Skin Assessment",
+          icon: <Search className="mr-2 h-5 w-5" />,
+        },
+        {
+          to: "/user/routines",
+          label: "My Routines",
+          icon: <Calendar className="mr-2 h-5 w-5" />,
+        },
+        {
+          to: "/user/progress",
+          label: "Progress Tracker",
+          icon: <Camera className="mr-2 h-5 w-5" />,
+        },
+        {
+          to: "/user/products",
+          label: "Products",
+          icon: <Droplets className="mr-2 h-5 w-5" />,
+        },
+        {
+          to: "/user/ai-recommendations",
+          label: "Ai",
+          icon: <Bot className="mr-2 h-5 w-5" />,
+        },
+        {
+          to: "/user/chat",
+          label: "Chat",
+          icon: <MessageSquare className="mr-2 h-5 w-5" />,
+        },
+        {
+          to: "/user/appointments",
+          label: "Appointments",
+          icon: <Calendar className="mr-2 h-5 w-5" />,
+        },
       ];
     }
 
     if (userData?.role === "DERMATOLOGISTS") {
       return [
-        { to: "/dermatologist/dashboard", label: "Dashboard", icon: <Home className="mr-2 h-5 w-5" /> },
-        { to: "/dermatologist/chat", label: "Chat", icon: <MessageSquare className="mr-2 h-5 w-5" /> },
-        { to: "/dermatologist/appointments", label: "Appointments", icon: <Calendar className="mr-2 h-5 w-5" /> },
+        {
+          to: "/dermatologist/dashboard",
+          label: "Dashboard",
+          icon: <Home className="mr-2 h-5 w-5" />,
+        },
+        {
+          to: "/dermatologist/chat",
+          label: "Chat",
+          icon: <MessageSquare className="mr-2 h-5 w-5" />,
+        },
+        {
+          to: "/dermatologist/appointments",
+          label: "Appointments",
+          icon: <Calendar className="mr-2 h-5 w-5" />,
+        },
       ];
     }
 
     if (userData?.role === "ADMIN") {
       return [
-        { to: "/admin/dashboard", label: "Dashboard", icon: <Home className="mr-2 h-5 w-5" /> },
-        { to: "/admin/products", label: "Products", icon: <Droplets className="mr-2 h-5 w-5" /> },
-        { to: "/admin/users", label: "Users", icon: <UserCircle className="mr-2 h-5 w-5" /> },
+        {
+          to: "/admin/dashboard",
+          label: "Dashboard",
+          icon: <Home className="mr-2 h-5 w-5" />,
+        },
+        {
+          to: "/admin/products",
+          label: "Products",
+          icon: <Droplets className="mr-2 h-5 w-5" />,
+        },
+        {
+          to: "/admin/users",
+          label: "Users",
+          icon: <UserCircle className="mr-2 h-5 w-5" />,
+        },
       ];
     }
 
@@ -99,15 +155,15 @@ export default function Navbar() {
                 ? userData?.role === "USER"
                   ? "/user/dashboard"
                   : userData?.role === "DERMATOLOGISTS"
-                  ? "/dermatologist/dashboard"
-                  : "/admin/dashboard"
+                    ? "/dermatologist/dashboard"
+                    : "/admin/dashboard"
                 : "/"
             }
             className="flex items-center space-x-2 mr-4"
           >
             <Sparkles className="h-6 w-6 text-primary" />
             <span className="hidden text-xl font-bold sm:inline-block">
-              GlowGuide
+              Derma Care Hub
             </span>
           </Link>
 
@@ -181,15 +237,15 @@ export default function Navbar() {
                       ? userData?.role === "USER"
                         ? "/user/dashboard"
                         : userData?.role === "DERMATOLOGISTS"
-                        ? "/dermatologist/dashboard"
-                        : "/admin/dashboard"
+                          ? "/dermatologist/dashboard"
+                          : "/admin/dashboard"
                       : "/"
                   }
                   className="flex items-center space-x-2 mb-6"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <Sparkles className="h-6 w-6 text-primary" />
-                  <span className="text-xl font-bold">GlowGuide</span>
+                  <span className="text-xl font-bold">Derma Care Hub</span>
                 </Link>
 
                 <nav className="flex flex-col space-y-4">
@@ -217,8 +273,8 @@ export default function Navbar() {
                           userData?.role === "USER"
                             ? "/user/profile"
                             : userData?.role === "DERMATOLOGISTS"
-                            ? "/dermatologist/profile"
-                            : "/admin/profile"
+                              ? "/dermatologist/profile"
+                              : "/admin/profile"
                         }
                         className="flex items-center rounded-lg p-2 transition-colors hover:bg-muted"
                         onClick={() => setIsMenuOpen(false)}

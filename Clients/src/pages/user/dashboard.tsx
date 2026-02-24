@@ -42,7 +42,6 @@ export default function Dashboard() {
           setSkinProfile(profileData);
         } catch (error) {
           console.error("Error fetching skin profile:", error);
-          // Profile might not exist yet, which is okay
         }
 
         // Fetch routines
@@ -73,7 +72,6 @@ export default function Dashboard() {
     fetchDashboardData();
   }, [setIsLoading, setSkinProfile]);
 
-  // Format concerns for display
   const formatConcerns = (concerns: SkinConcernObject[]) => {
     if (!Array.isArray(concerns)) return "No concerns listed";
     return concerns
@@ -101,7 +99,7 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8 flex flex-col gap-2">
-        <h1 className="text-2xl font-bold text-transparent md:text-3xl bg-gradient-to-r from-primary via-pink-500 to-amber-500 bg-clip-text">
+        <h1 className="text-2xl font-bold text-transparent md:text-3xl bg-linear-to-r from-primary via-pink-500 to-amber-500 bg-clip-text">
           Welcome, {userData?.name}!
         </h1>
         <p className="text-muted-foreground">
@@ -111,12 +109,12 @@ export default function Dashboard() {
         </p>
       </div>
 
-      {/* Assessment Banner (shown if no profile exists) */}
+      {/* Assessment Banner */}
       {!userProfile && (
-        <Card className="mb-8 border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5">
+        <Card className="mb-8 border-primary/20 bg-linear-to-r from-primary/10 to-primary/5">
           <CardContent className="flex flex-col items-center gap-4 py-6 text-center md:flex-row md:justify-between md:text-left">
             <div>
-              <h2 className="mb-2 text-xl font-semibold text-transparent bg-gradient-to-r from-primary to-amber-500 bg-clip-text">
+              <h2 className="mb-2 text-xl font-semibold text-transparent bg-linear-to-r from-primary to-amber-500 bg-clip-text">
                 Start Your Skin Journey
               </h2>
               <p className="text-muted-foreground">
@@ -187,13 +185,7 @@ export default function Dashboard() {
           </CardContent>
           <CardFooter>
             <Button variant="outline" size="sm" className="w-full" asChild>
-              <Link
-                to={
-                  userProfile
-                    ? "/user/skin-assessment"
-                    : "/user/skin-assessment"
-                }
-              >
+              <Link to={userProfile ? "/user/skin-assessment" : "/user/skin-assessment"}>
                 {userProfile ? "Update Profile" : "Create Profile"}
               </Link>
             </Button>
@@ -220,9 +212,7 @@ export default function Dashboard() {
                   >
                     <div>
                       <p className="font-medium">{routine.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {routine.type}
-                      </p>
+                      <p className="text-sm text-muted-foreground">{routine.type}</p>
                     </div>
                     <ChevronRight className="h-4 w-4 text-muted-foreground" />
                   </Link>
@@ -272,11 +262,7 @@ export default function Dashboard() {
                         {new Date(log.createdAt).toLocaleDateString()}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        Concern:{" "}
-                        {log.concerns
-                          .toString()
-                          .replace("_", " ")
-                          .toLowerCase()}
+                        Concern: {log.concerns.toString().replace("_", " ").toLowerCase()}
                       </p>
                     </div>
                     <div className="flex">
@@ -290,18 +276,14 @@ export default function Dashboard() {
             ) : (
               <div className="py-4 text-center text-muted-foreground">
                 <p>No progress logs found</p>
-                <p className="text-sm">
-                  Record your first entry to start tracking
-                </p>
+                <p className="text-sm">Record your first entry to start tracking</p>
               </div>
             )}
           </CardContent>
           <CardFooter>
             <Button variant="outline" size="sm" className="w-full" asChild>
               <Link to="/user/progress">
-                {recentLogs && recentLogs.length > 0
-                  ? "View Progress"
-                  : "Add First Log"}
+                {recentLogs && recentLogs.length > 0 ? "View Progress" : "Add First Log"}
               </Link>
             </Button>
           </CardFooter>
@@ -309,7 +291,6 @@ export default function Dashboard() {
       </div>
 
       {/* Recommendation Section */}
-
       <Card className="mt-8">
         <CardHeader>
           <CardTitle>Recommended for You</CardTitle>
@@ -329,7 +310,7 @@ export default function Dashboard() {
               </div>
               <div className="p-3">
                 <p className="font-medium">Explore Products</p>
-                      <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   Find products suited for your skin type
                 </p>
               </div>
@@ -348,7 +329,7 @@ export default function Dashboard() {
               </div>
               <div className="p-3">
                 <p className="font-medium">Build Your Routine</p>
-                      <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   Personalized step-by-step regimens
                 </p>
               </div>
@@ -367,7 +348,7 @@ export default function Dashboard() {
               </div>
               <div className="p-3">
                 <p className="font-medium">Track Progress</p>
-                      <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   Document your skincare journey
                 </p>
               </div>

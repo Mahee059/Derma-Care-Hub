@@ -1,11 +1,19 @@
-import { useContext, useEffect, useState, useCallback } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Plus, Calendar } from "lucide-react";
 import { toast } from "sonner";
-import { AppointmentData } from "../../lib/types";
+import { AppointmentData, UserData } from "../../lib/types";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../../components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -21,56 +29,175 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
-import { Link } from "react-router-dom";
+import { Textarea } from "../../components/ui/textaera";
 import appointmentService from "../../api/services/appointment.service";
+import dermotologistService from "../../api/services/dermotologist.service";
 
-export default function DermotologistAppointments() {
+export default function Appointments() {
   const { setIsLoading } = useContext(AppContext);
   const [appointments, setAppointments] = useState<AppointmentData[]>([]);
+  const [dermatologists, setDermatologists] = useState<UserData[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedDermatologist, setSelectedDermatologist] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [notes, setNotes] = useState("");
 
-  const fetchAppointments = useCallback(async () => {
+  const fetchDermatologists = async () => {
     try {
+      const data = await dermotologistService.getDermatologists();
+      setDermatologists(data);
+    } catch (error) {
+      console.error("Error fetching dermatologists:", error);
+      toast.error("Failed to load dermatologists");
+    }
+  };
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        setIsLoading(true);
+        const data = await appointmentService.getAppointments();
+        setAppointments(data);
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+        toast.error("Failed to load appointments");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAppointments();
+    fetchDermatologists();
+  }, [setIsLoading]);
+
+  const handleCreateAppointment = async () => {
+    try {
+      if (!selectedDermatologist || !selectedDate) {
+        toast.error("Please select a dermatologist and date");
+        return;
+      }
+
       setIsLoading(true);
+      await appointmentService.createAppointment({
+        dermatologistId: selectedDermatologist,
+        date: selectedDate,
+        notes,
+      });
+
+      toast.success("Appointment created successfully");
+      setIsDialogOpen(false);
+      setSelectedDermatologist("");
+      setSelectedDate("");
+      setNotes("");
       const data = await appointmentService.getAppointments();
       setAppointments(data);
     } catch (error) {
-      console.error("Error fetching appointments:", error);
-      toast.error("Failed to load appointments");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [setIsLoading]);
-
-  useEffect(() => {
-    fetchAppointments();
-  }, [fetchAppointments]);
-
-  const handleStatusChange = async (id: string, status: string) => {
-    try {
-      setIsLoading(true);
-      await appointmentService.updateStatus(id, status);
-      toast.success("Appointment status updated");
-      fetchAppointments();
-    } catch (error) {
-      console.error("Error updating appointment status:", error);
-      toast.error("Failed to update status");
+      console.error("Error creating appointment:", error);
+      toast.error("Failed to create appointment");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const filteredAppointments = appointments.filter(
-    (appointment) =>
-      appointment.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      appointment.user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const handleCancelAppointment = async (id: string) => {
+    try {
+      setIsLoading(true);
+      await appointmentService.deleteAppointment(id);
+      toast.success("Appointment cancelled successfully");
+      const data = await appointmentService.getAppointments();
+      setAppointments(data);
+    } catch (error) {
+      console.error("Error cancelling appointment:", error);
+      toast.error("Failed to cancel appointment");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const filteredAppointments = appointments.filter((appointment) =>
+    appointment.dermatologist.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="container px-4 py-8 mx-auto">
-      <div className="flex flex-col gap-2 mb-8">
-        <h1 className="text-2xl font-bold md:text-3xl">Appointments</h1>
-        <p className="text-foreground/70">Manage your patient appointments</p>
+      <div className="flex flex-col gap-2 mb-8 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-transparent md:text-3xl bg-linear-to-r from-pink-500 to-amber-500 bg-clip-text">
+            My Appointments
+          </h1>
+          <p className="text-foreground/70">
+            Schedule and manage your dermatologist appointments
+          </p>
+        </div>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              New Appointment
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Schedule Appointment</DialogTitle>
+              <DialogDescription>
+                Book a consultation with a dermatologist
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">
+                  Select Dermatologist
+                </label>
+                <Select
+                  value={selectedDermatologist}
+                  onValueChange={setSelectedDermatologist}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose a dermatologist" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {dermatologists.map((dermatologist) => (
+                      <SelectItem
+                        key={dermatologist.id}
+                        value={dermatologist.id}
+                      >
+                        {dermatologist.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">
+                  Select Date & Time
+                </label>
+                <Input
+                  type="datetime-local"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  min={new Date().toISOString().slice(0, 16)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Notes (Optional)</label>
+                <Textarea
+                  placeholder="Add any specific concerns or notes"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                />
+              </div>
+
+              <Button className="w-full" onClick={handleCreateAppointment}>
+                Schedule Appointment
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="relative mb-4">
@@ -87,7 +214,7 @@ export default function DermotologistAppointments() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Patient</TableHead>
+              <TableHead>Dermatologist</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Notes</TableHead>
@@ -95,46 +222,62 @@ export default function DermotologistAppointments() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredAppointments.map((appointment) => (
-              <TableRow key={appointment.id}>
-                <TableCell>
-                  <div>
-                    <p className="font-medium">{appointment.user.name}</p>
+            {filteredAppointments.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center">
+                  <div className="flex flex-col items-center py-6">
+                    <Calendar className="w-12 h-12 mb-4 text-foreground/30" />
+                    <p className="mb-2 font-medium">No appointments found</p>
                     <p className="text-sm text-foreground/70">
-                      {appointment.user.email}
+                      Schedule your first appointment with a dermatologist
                     </p>
                   </div>
                 </TableCell>
-                <TableCell>
-                  {new Date(appointment.date).toLocaleDateString()}
-                </TableCell>
-                <TableCell>
-                  <Select
-                    value={appointment.status}
-                    onValueChange={(value) =>
-                      handleStatusChange(appointment.id, value)
-                    }
-                  >
-                    <SelectTrigger className="w-[140px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="PENDING">Pending</SelectItem>
-                      <SelectItem value="CONFIRMED">Confirmed</SelectItem>
-                      <SelectItem value="CANCELLED">Cancelled</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </TableCell>
-                <TableCell>{appointment.notes || "No notes"}</TableCell>
-                <TableCell>
-                  <Link to={`/dermatologist/patients/${appointment.user.id}`}>
-                    <Button variant="outline" size="sm">
-                      View Details
-                    </Button>
-                  </Link>
-                </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              filteredAppointments.map((appointment) => (
+                <TableRow key={appointment.id}>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium">
+                        {appointment.dermatologist.name}
+                      </p>
+                      <p className="text-sm text-foreground/70">
+                        {appointment.dermatologist.email}
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {new Date(appointment.date).toLocaleString()}
+                  </TableCell>
+                  <TableCell>
+                    <span
+                      className={`px-2 py-1 text-xs rounded-full ${
+                        appointment.status === "CONFIRMED"
+                          ? "bg-green-100 text-green-800"
+                          : appointment.status === "CANCELLED"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-yellow-100 text-yellow-800"
+                      }`}
+                    >
+                      {appointment.status}
+                    </span>
+                  </TableCell>
+                  <TableCell>{appointment.notes || "No notes"}</TableCell>
+                  <TableCell>
+                    {appointment.status !== "CANCELLED" && (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleCancelAppointment(appointment.id)}
+                      >
+                        Cancel
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

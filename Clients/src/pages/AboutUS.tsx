@@ -10,7 +10,7 @@ export default function AboutUs() {
           Our Mission
         </h1>
         <p className="text-lg text-foreground/70">
-          At Derma Care, we're revolutionizing skincare through personalization,
+          At Derma Care Hub, we're revolutionizing skincare through personalization,
           expertise, and technology. Our mission is to help everyone achieve
           their healthiest skin with science-backed solutions and expert
           guidance.
