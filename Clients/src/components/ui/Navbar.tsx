@@ -15,10 +15,15 @@ import {
   Bot,
 } from "lucide-react";
 
-
 import NotificationCenter from "../notification/NotificationCenter";
 import { Button } from "./button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@radix-ui/react-dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "./sheet";
 import { AppContext } from "../../context/AppContext";
 
@@ -33,7 +38,6 @@ export default function Navbar() {
     navigate("/login");
   };
 
-  // Define links based on user role
   const getNavLinks = () => {
     if (!isAuthenticated) {
       return [
@@ -53,86 +57,30 @@ export default function Navbar() {
 
     if (userData?.role === "USER") {
       return [
-        {
-          to: "/user/dashboard",
-          label: "Dashboard",
-          icon: <Home className="mr-2 h-5 w-5" />,
-        },
-        {
-          to: "/user/skin-assessment",
-          label: "Skin Assessment",
-          icon: <Search className="mr-2 h-5 w-5" />,
-        },
-        {
-          to: "/user/routines",
-          label: "My Routines",
-          icon: <Calendar className="mr-2 h-5 w-5" />,
-        },
-        {
-          to: "/user/progress",
-          label: "Progress Tracker",
-          icon: <Camera className="mr-2 h-5 w-5" />,
-        },
-        {
-          to: "/user/products",
-          label: "Products",
-          icon: <Droplets className="mr-2 h-5 w-5" />,
-        },
-        {
-          to: "/user/ai-recommendations",
-          label: "Ai",
-          icon: <Bot className="mr-2 h-5 w-5" />,
-        },
-        {
-          to: "/user/chat",
-          label: "Chat",
-          icon: <MessageSquare className="mr-2 h-5 w-5" />,
-        },
-        {
-          to: "/user/appointments",
-          label: "Appointments",
-          icon: <Calendar className="mr-2 h-5 w-5" />,
-        },
+        { to: "/user/dashboard", label: "Dashboard", icon: <Home className="mr-2 h-5 w-5" /> },
+        { to: "/user/skin-assessment", label: "Skin Assessment", icon: <Search className="mr-2 h-5 w-5" /> },
+        { to: "/user/routines", label: "My Routines", icon: <Calendar className="mr-2 h-5 w-5" /> },
+        { to: "/user/progress", label: "Progress Tracker", icon: <Camera className="mr-2 h-5 w-5" /> },
+        { to: "/user/products", label: "Products", icon: <Droplets className="mr-2 h-5 w-5" /> },
+        { to: "/user/ai-recommendations", label: "Ai", icon: <Bot className="mr-2 h-5 w-5" /> },
+        { to: "/user/chat", label: "Chat", icon: <MessageSquare className="mr-2 h-5 w-5" /> },
+        { to: "/user/appointments", label: "Appointments", icon: <Calendar className="mr-2 h-5 w-5" /> },
       ];
     }
 
     if (userData?.role === "DERMATOLOGISTS") {
       return [
-        {
-          to: "/dermatologist/dashboard",
-          label: "Dashboard",
-          icon: <Home className="mr-2 h-5 w-5" />,
-        },
-        {
-          to: "/dermatologist/chat",
-          label: "Chat",
-          icon: <MessageSquare className="mr-2 h-5 w-5" />,
-        },
-        {
-          to: "/dermatologist/appointments",
-          label: "Appointments",
-          icon: <Calendar className="mr-2 h-5 w-5" />,
-        },
+        { to: "/dermatologist/dashboard", label: "Dashboard", icon: <Home className="mr-2 h-5 w-5" /> },
+        { to: "/dermatologist/chat", label: "Chat", icon: <MessageSquare className="mr-2 h-5 w-5" /> },
+        { to: "/dermatologist/appointments", label: "Appointments", icon: <Calendar className="mr-2 h-5 w-5" /> },
       ];
     }
 
     if (userData?.role === "ADMIN") {
       return [
-        {
-          to: "/admin/dashboard",
-          label: "Dashboard",
-          icon: <Home className="mr-2 h-5 w-5" />,
-        },
-        {
-          to: "/admin/products",
-          label: "Products",
-          icon: <Droplets className="mr-2 h-5 w-5" />,
-        },
-        {
-          to: "/admin/users",
-          label: "Users",
-          icon: <UserCircle className="mr-2 h-5 w-5" />,
-        },
+        { to: "/admin/dashboard", label: "Dashboard", icon: <Home className="mr-2 h-5 w-5" /> },
+        { to: "/admin/products", label: "Products", icon: <Droplets className="mr-2 h-5 w-5" /> },
+        { to: "/admin/users", label: "Users", icon: <UserCircle className="mr-2 h-5 w-5" /> },
       ];
     }
 
@@ -142,7 +90,7 @@ export default function Navbar() {
   const navLinks = getNavLinks();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="flex h-16 w-full items-center justify-between px-6 mx-auto">
         <div className="flex items-center">
           <Link
@@ -182,6 +130,7 @@ export default function Navbar() {
 
         <div className="flex items-center space-x-4">
           {isAuthenticated && <NotificationCenter />}
+
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -195,6 +144,7 @@ export default function Navbar() {
                   </span>
                 </Button>
               </DropdownMenuTrigger>
+
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => navigate("/profile")}>
                   <Settings className="mr-2 h-4 w-4" />
@@ -222,6 +172,7 @@ export default function Navbar() {
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
+
             <SheetContent side="left" className="pr-0">
               <div className="flex flex-col py-4">
                 <Link
@@ -275,6 +226,7 @@ export default function Navbar() {
                         <Settings className="mr-2 h-5 w-5" />
                         Profile
                       </Link>
+
                       <button
                         type="button"
                         className="flex w-full items-center rounded-lg p-2 text-left text-destructive transition-colors hover:bg-destructive/10"

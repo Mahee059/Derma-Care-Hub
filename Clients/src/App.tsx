@@ -12,7 +12,6 @@ import Register from "./pages/auth/Register";
 import SkinCare101 from "./pages/SkinCare101";
 import AboutUs from "./pages/AboutUS";
 import Profile from "./pages/Profile";
-import ProtectedRoute from "./middlewares/protected.route";
 import SkinAssessment from "./pages/user/skin.assessment";
 import Routines from "./pages/user/routines";
 import ProgressTracker from "./pages/user/progress.tracker";
@@ -30,6 +29,7 @@ import Footer from "./components/ui/Footer";
 import UserDashboard from "./pages/user/dashboard";
 import UserChat from "./pages/user/chat";
 import DermatologistsDashboard from "./pages/dermatologist/dashboard";
+import ProtectedRoute from "./components/middleware/ProtectedRoute";
 
 
 

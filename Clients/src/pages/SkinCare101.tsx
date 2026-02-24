@@ -18,7 +18,7 @@ export default function SkinCare101() {
     <div className="container px-4 py-12 mx-auto">
       {/* Hero Section */}
       <div className="max-w-3xl mx-auto mb-16 text-center">
-        <h1 className="mb-4 text-4xl font-bold tracking-tight text-transparent md:text-5xl bg-gradient-to-r from-pink-500 to-amber-500 bg-clip-text">
+        <h1 className="mb-4 text-4xl font-bold tracking-tight text-transparent md:text-5xl bg-linear-to-r from-pink-500 to-amber-500 bg-clip-text">
           Skincare 101
         </h1>
         <p className="text-lg text-foreground/70">
@@ -126,7 +126,7 @@ export default function SkinCare101() {
           </div>
         </TabsContent>
 
-        {/* Skincare Routines */}
+        {/* Routines */}
         <TabsContent value="routines">
           <div className="grid gap-6 mt-6">
             <Card>
@@ -162,7 +162,7 @@ export default function SkinCare101() {
           </div>
         </TabsContent>
 
-        {/* Common Concerns */}
+        {/* Concerns */}
         <TabsContent value="concerns">
           <div className="grid gap-6 mt-6">
             <Card>
@@ -183,22 +183,19 @@ export default function SkinCare101() {
                 <div>
                   <h3 className="mb-2 font-semibold">Aging</h3>
                   <p className="text-foreground/70">
-                    Focus on retinoids, peptides, and antioxidants for fine
-                    lines and wrinkles.
+                    Focus on retinoids, peptides, and antioxidants.
                   </p>
                 </div>
                 <div>
                   <h3 className="mb-2 font-semibold">Hyperpigmentation</h3>
                   <p className="text-foreground/70">
-                    Use vitamin C, kojic acid, and alpha arbutin for dark spots
-                    and uneven tone.
+                    Use vitamin C, kojic acid, and alpha arbutin.
                   </p>
                 </div>
                 <div>
                   <h3 className="mb-2 font-semibold">Sensitivity</h3>
                   <p className="text-foreground/70">
-                    Choose gentle, fragrance-free products with soothing
-                    ingredients like centella asiatica.
+                    Choose gentle, fragrance-free products.
                   </p>
                 </div>
               </CardContent>

@@ -6,11 +6,11 @@ export default function AboutUs() {
     <div className="container px-4 py-12 mx-auto">
       {/* Hero Section */}
       <div className="max-w-3xl mx-auto mb-16 text-center">
-        <h1 className="mb-4 text-4xl font-bold tracking-tight text-transparent md:text-5xl bg-gradient-to-r from-pink-500 to-amber-500 bg-clip-text">
+        <h1 className="mb-4 text-4xl font-bold tracking-tight text-transparent md:text-5xl bg-linear-to-r from-pink-500 to-amber-500 bg-clip-text">
           Our Mission
         </h1>
         <p className="text-lg text-foreground/70">
-          At GlowGuide, we're revolutionizing skincare through personalization,
+          At Derma Care, we're revolutionizing skincare through personalization,
           expertise, and technology. Our mission is to help everyone achieve
           their healthiest skin with science-backed solutions and expert
           guidance.
@@ -25,7 +25,7 @@ export default function AboutUs() {
             <h3 className="mb-2 text-xl font-semibold">Personalization</h3>
             <p className="text-foreground/70">
               Tailored skincare solutions based on your unique skin profile and
-              needs
+              needs.
             </p>
           </CardContent>
         </Card>
@@ -35,7 +35,7 @@ export default function AboutUs() {
             <Shield className="w-12 h-12 mb-4 text-amber-500" />
             <h3 className="mb-2 text-xl font-semibold">Expert Guidance</h3>
             <p className="text-foreground/70">
-              Access to certified dermatologists and skincare professionals
+              Access to certified dermatologists and skincare professionals.
             </p>
           </CardContent>
         </Card>
@@ -45,7 +45,7 @@ export default function AboutUs() {
             <Sparkles className="w-12 h-12 mb-4 text-pink-400" />
             <h3 className="mb-2 text-xl font-semibold">Innovation</h3>
             <p className="text-foreground/70">
-              AI-powered recommendations and cutting-edge skincare technology
+              AI-powered recommendations and cutting-edge skincare technology.
             </p>
           </CardContent>
         </Card>
@@ -55,7 +55,7 @@ export default function AboutUs() {
             <Heart className="w-12 h-12 mb-4 text-amber-400" />
             <h3 className="mb-2 text-xl font-semibold">Community</h3>
             <p className="text-foreground/70">
-              A supportive environment for sharing experiences and knowledge
+              A supportive environment for sharing experiences and knowledge.
             </p>
           </CardContent>
         </Card>
@@ -63,9 +63,10 @@ export default function AboutUs() {
 
       {/* Team Section */}
       <div className="max-w-4xl mx-auto">
-        <h2 className="mb-8 text-3xl font-bold text-center text-transparent bg-gradient-to-r from-pink-500 to-amber-500 bg-clip-text">
+        <h2 className="mb-8 text-3xl font-bold text-center text-transparent bg-linear-to-r from-pink-500 to-amber-500 bg-clip-text">
           Our Team
         </h2>
+
         <div className="grid gap-8 md:grid-cols-3">
           <div className="text-center">
             <img
@@ -74,7 +75,9 @@ export default function AboutUs() {
               className="object-cover w-40 h-40 mx-auto mb-4 rounded-full"
             />
             <h3 className="mb-1 text-lg font-semibold">Dr. Sarah Chen</h3>
-            <p className="text-sm text-foreground/70">Chief Dermatologist</p>
+            <p className="text-sm text-foreground/70">
+              Chief Dermatologist
+            </p>
           </div>
 
           <div className="text-center">
@@ -86,7 +89,9 @@ export default function AboutUs() {
             <h3 className="mb-1 text-lg font-semibold">
               Dr. Michael Rodriguez
             </h3>
-            <p className="text-sm text-foreground/70">Research Director</p>
+            <p className="text-sm text-foreground/70">
+              Research Director
+            </p>
           </div>
 
           <div className="text-center">
@@ -95,8 +100,12 @@ export default function AboutUs() {
               alt="Emma Thompson"
               className="object-cover w-40 h-40 mx-auto mb-4 rounded-full"
             />
-            <h3 className="mb-1 text-lg font-semibold">Emma Thompson</h3>
-            <p className="text-sm text-foreground/70">Product Specialist</p>
+            <h3 className="mb-1 text-lg font-semibold">
+              Emma Thompson
+            </h3>
+            <p className="text-sm text-foreground/70">
+              Product Specialist
+            </p>
           </div>
         </div>
       </div>
