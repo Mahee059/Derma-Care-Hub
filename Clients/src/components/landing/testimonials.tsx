@@ -25,7 +25,7 @@ const testimonials = [
   },
   {
     quote:
-      "My acne-prone skin was a challenge until I found GlowGuide. The routine they created for me cleared my skin in just 8 weeks!",
+      "My acne-prone skin was a challenge until I found Derma care Hub. The routine they created for me cleared my skin in just 8 weeks!",
     author: {
       name: "Jamie Rodriguez",
       role: "Content Creator",
@@ -35,7 +35,7 @@ const testimonials = [
   },
   {
     quote:
-      "I love that GlowGuide recommends sustainable products. My skin looks great and I feel good about my environmental impact too.",
+      "I love that Derma Care Hub recommends sustainable products. My skin looks great and I feel good about my environmental impact too.",
     author: {
       name: "Alex Thompson",
       role: "Environmental Activist",

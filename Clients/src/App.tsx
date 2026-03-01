@@ -17,7 +17,7 @@ import Routines from "./pages/user/routines";
 import ProgressTracker from "./pages/user/progress.tracker";
 import ProductExplorer from "./pages/user/product.explorer";
 import AIRecommendations from "./pages/user/AI.recommendations";
-import Appointments from "./pages/user/appointment";
+
 import DermotologistAppointments from "./pages/dermatologist/Appointment";
 import Chat from "./pages/dermatologist/chat";
 import Patients from "./pages/dermatologist/patient";
@@ -30,6 +30,7 @@ import UserDashboard from "./pages/user/dashboard";
 import UserChat from "./pages/user/chat";
 import DermatologistsDashboard from "./pages/dermatologist/dashboard";
 import ProtectedRoute from "./components/middleware/ProtectedRoute";
+import Appointments from "./pages/dermatologist/Appointment";
 
 
 
