@@ -1,7 +1,6 @@
 import express from "express";
-import { authMiddleware, authorize } from "../middlewares/auth.middleware";
 import { approveDermatologist, deleteUser, getAdminStats, getAllUsers, getPendingDermatologists, updateUserRole } from "../controllers/admin.conroller";
-
+import { authMiddleware, authorize } from "../middlewares/auth.middleware";
 
 const router = express.Router();
 
@@ -18,3 +17,4 @@ router.get("/pending-dermatologists", getPendingDermatologists);
 router.patch("/dermatologists/:id/approve", approveDermatologist);
 
 export default router;
+

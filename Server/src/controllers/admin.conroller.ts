@@ -1,10 +1,13 @@
 import { Request, Response } from "express";
 import { db } from "../lib/prisma";
 import { Role, DermatologistStatus } from "@prisma/client";
+import { sendApprovalEmail } from "../config/email";
 import { createNotification } from "./notification.controller";
+
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
+
     const users = await db.user.findMany({
       select: {
         id: true,
@@ -22,17 +25,26 @@ export const getAllUsers = async (req: Request, res: Response) => {
       success: true,
       users,
     });
+
   } catch (error) {
+
     console.error("Get all users error:", error);
+
     res.status(500).json({
       success: false,
       message: "Internal server error",
     });
+
   }
 };
 
+
+
+//  Delete user
 export const deleteUser = async (req: Request, res: Response) => {
+
   try {
+
     const { id } = req.params;
 
     const user = await db.user.findUnique({
@@ -40,42 +52,58 @@ export const deleteUser = async (req: Request, res: Response) => {
     });
 
     if (!user) {
+
       res.status(404).json({
         success: false,
         message: "User not found",
       });
+
       return;
     }
+
 
     await db.user.delete({
       where: { id },
     });
 
+
     res.json({
       success: true,
       message: "User deleted successfully",
     });
+
   } catch (error) {
+
     console.error("Delete user error:", error);
+
     res.status(500).json({
       success: false,
       message: "Internal server error",
     });
+
   }
 };
 
+
+
+//  Update user role
 export const updateUserRole = async (req: Request, res: Response) => {
+
   try {
+
     const { id } = req.params;
     const { role } = req.body;
 
     if (!Object.values(Role).includes(role)) {
+
       res.status(400).json({
         success: false,
         message: "Invalid role",
       });
+
       return;
     }
+
 
     const user = await db.user.update({
       where: { id },
@@ -88,28 +116,52 @@ export const updateUserRole = async (req: Request, res: Response) => {
       },
     });
 
+
     res.json({
       success: true,
       user,
     });
+
   } catch (error) {
+
     console.error("Update user role error:", error);
+
     res.status(500).json({
       success: false,
       message: "Internal server error",
     });
+
   }
 };
 
+
+
+// ✅ Admin dashboard stats
 export const getAdminStats = async (req: Request, res: Response) => {
+
   try {
-    const [totalUsers, totalDermatologists, totalProducts, totalAppointments] =
-      await Promise.all([
-        db.user.count({ where: { role: "USER" } }),
-        db.user.count({ where: { role: "DERMATOLOGISTS" } }),
-        db.product.count(),
-        db.appointment.count(),
-      ]);
+
+    const [
+      totalUsers,
+      totalDermatologists,
+      totalProducts,
+      totalAppointments,
+    ] = await Promise.all([
+
+      db.user.count({
+        where: { role: "USER" },
+      }),
+
+      db.user.count({
+        where: { role: "DERMATOLOGISTS" },
+      }),
+
+      db.product.count(),
+
+      db.appointment.count(),
+
+    ]);
+
 
     res.json({
       success: true,
@@ -120,20 +172,29 @@ export const getAdminStats = async (req: Request, res: Response) => {
         totalAppointments,
       },
     });
+
   } catch (error) {
+
     console.error("Get admin stats error:", error);
+
     res.status(500).json({
       success: false,
       message: "Internal server error",
     });
+
   }
 };
 
+
+
+// Get pending dermatologists
 export const getPendingDermatologists = async (
   req: Request,
   res: Response
 ) => {
+
   try {
+
     const pendingDermatologists = await db.user.findMany({
       where: {
         role: "DERMATOLOGISTS",
@@ -149,47 +210,68 @@ export const getPendingDermatologists = async (
       },
     });
 
+
     res.json({
       success: true,
       dermatologists: pendingDermatologists,
     });
+
   } catch (error) {
+
     console.error("Get pending dermatologists error:", error);
+
     res.status(500).json({
       success: false,
       message: "Internal server error",
     });
+
   }
 };
 
+
+
+// Approve / Reject dermatologist
 export const approveDermatologist = async (
   req: Request,
   res: Response
 ) => {
+
   try {
+
     const { id } = req.params;
     const { status } = req.body;
 
+
+    // validate status
     if (!Object.values(DermatologistStatus).includes(status)) {
+
       res.status(400).json({
         success: false,
         message: "Invalid status",
       });
+
       return;
     }
 
+
+    // find dermatologist
     const dermatologist = await db.user.findUnique({
       where: { id },
     });
 
+
     if (!dermatologist || dermatologist.role !== "DERMATOLOGISTS") {
+
       res.status(404).json({
         success: false,
         message: "Dermatologist not found",
       });
+
       return;
     }
 
+
+    // update status
     const updatedUser = await db.user.update({
       where: { id },
       data: { status },
@@ -202,13 +284,19 @@ export const approveDermatologist = async (
       },
     });
 
-    // Create notification for dermatologist
+
+    // create notification
     const notificationTitle =
-      status === "APPROVED" ? "Account Approved" : "Account Rejected";
+      status === "APPROVED"
+        ? "Account Approved"
+        : "Account Rejected";
+
+
     const notificationMessage =
       status === "APPROVED"
-        ? "Your dermatologist account has been approved. You can now login to your account."
-        : "Your dermatologist account has been rejected. Please contact support for more information.";
+        ? "Your dermatologist account has been approved. You can now login."
+        : "Your dermatologist account has been rejected. Contact support.";
+
 
     await createNotification(
       id,
@@ -217,21 +305,32 @@ export const approveDermatologist = async (
       notificationMessage
     );
 
-    // Email disabled for now
-    console.log(
-      `Dermatologist ${dermatologist.name} status updated to ${status}`
+
+    // FIXED email (null-safe)
+    await sendApprovalEmail(
+      dermatologist.email,
+      dermatologist.name ?? "Dermatologist",
+      dermatologist.dermatologistId ?? "",
+      status
     );
+
 
     res.json({
       success: true,
       user: updatedUser,
-      message: `Dermatologist ${status.toLowerCase()} successfully.`,
+      message:
+        `Dermatologist ${status.toLowerCase()} successfully. Email sent.`,
     });
+
+
   } catch (error) {
+
     console.error("Approve dermatologist error:", error);
+
     res.status(500).json({
       success: false,
       message: "Internal server error",
     });
+
   }
 };

@@ -15,7 +15,7 @@ import routineRoutes from "./routes/routine.routes";
 import chatRoutes from "./routes/chat.routes";
 import AIRoutes from "./routes/AI.routes";
 import adminRoutes from "./routes/admin.routes";
-
+import { setupSocketHandlers } from "./socket/socket.handler";
 
 
 
@@ -60,6 +60,10 @@ app.use("/api/admin", adminRoutes);
 app.use((_req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
+
+
+// Setup socket handlers
+setupSocketHandlers(io);
 
 // Start server
 const PORT = process.env.PORT || 5000;

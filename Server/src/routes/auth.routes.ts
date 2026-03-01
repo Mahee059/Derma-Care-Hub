@@ -1,13 +1,12 @@
-import { Router, Request, Response } from "express";
-import { login, register } from "../controllers/auth.controller";
+import express from "express";
+import { authMiddleware } from "../middlewares/auth.middleware";
+import { getCurrentUser, loginUser, registerUser } from "../controllers/auth.controller";
 
-const router = Router();
 
-console.log("Auth routes loaded");
-// REGISTER route
-router.post("/register", register);
+const router = express.Router();
 
-// LOGIN route
-router.post("/login", login);
+router.post("/register", registerUser);
+router.post("/login", loginUser);
+router.get('/me', authMiddleware, getCurrentUser);
 
 export default router;

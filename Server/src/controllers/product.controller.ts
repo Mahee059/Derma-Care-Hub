@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { db } from "../lib/prisma";
 import { SkinType, SkinConcern } from "@prisma/client";
 
+import fs from "fs";
+import cloudinary from "../config/cloudinary.config";
+
 interface AuthRequest extends Request {
   user?: any;
 }
@@ -101,7 +104,7 @@ export const getRecommendedProducts = async (
   res: Response
 ) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user.id;
 
     if (!userId) {
       res
@@ -176,6 +179,22 @@ export const createProduct = async (req: Request, res: Response) => {
       concerns,
     } = req.body;
 
+    let imageUrl = null;
+    if (req.file) {
+      try {
+        const result = await cloudinary.uploader.upload(req.file.path);
+        imageUrl = result.secure_url;
+        // Clean up the temporary file
+        fs.unlinkSync(req.file.path);
+      } catch (uploadError) {
+        console.error("Image upload error:", uploadError);
+        if (req.file) {
+          fs.unlinkSync(req.file.path);
+        }
+        throw new Error("Image upload failed");
+      }
+    }
+
     const product = await db.product.create({
       data: {
         name,
@@ -185,6 +204,7 @@ export const createProduct = async (req: Request, res: Response) => {
         price: Number(price),
         sustainabilityScore: Number(sustainabilityScore),
         allergens,
+        imageUrl,
         externalUrl,
         suitableSkinTypes: {
           create: skinTypes.map((type: SkinType) => ({ type })),
@@ -228,6 +248,22 @@ export const updateProduct = async (req: Request, res: Response) => {
       concerns,
     } = req.body;
 
+    let imageUrl;
+    if (req.file) {
+      try {
+        const result = await cloudinary.uploader.upload(req.file.path);
+        imageUrl = result.secure_url;
+        // Clean up the temporary file
+        fs.unlinkSync(req.file.path);
+      } catch (uploadError) {
+        console.error("Image upload error:", uploadError);
+        if (req.file) {
+          fs.unlinkSync(req.file.path);
+        }
+        throw new Error("Image upload failed");
+      }
+    }
+
     // Delete existing skin types and concerns
     await db.productSkinType.deleteMany({
       where: { productId: id },
@@ -246,6 +282,7 @@ export const updateProduct = async (req: Request, res: Response) => {
         price: Number(price),
         sustainabilityScore: Number(sustainabilityScore),
         allergens,
+        ...(imageUrl && { imageUrl }),
         externalUrl,
         suitableSkinTypes: {
           create: skinTypes.map((type: SkinType) => ({ type })),
@@ -276,6 +313,22 @@ export const updateProduct = async (req: Request, res: Response) => {
 export const deleteProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+
+    const product = await db.product.findUnique({
+      where: { id },
+      select: { imageUrl: true },
+    });
+
+    if (product?.imageUrl) {
+      try {
+        const publicId = product.imageUrl.split("/").pop()?.split(".")[0];
+        if (publicId) {
+          await cloudinary.uploader.destroy(publicId);
+        }
+      } catch (deleteError) {
+        console.error("Error deleting image from Cloudinary:", deleteError);
+      }
+    }
 
     // Delete associated records first
     await db.productSkinType.deleteMany({
