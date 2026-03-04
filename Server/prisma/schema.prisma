@@ -54,7 +54,7 @@ model User {
   id              String              @id @default(uuid())
   email           String              @unique
   password        String
-  name            String?             @db.VarChar(50)
+  name            String              @db.VarChar(50) @default("User")  
   phone           String              @unique
   image           String?
   role            Role
@@ -64,9 +64,9 @@ model User {
   updatedAt       DateTime            @updatedAt
   skinProfile     SkinProfile?  
   skinAnalyses    SkinAnalysis[]
-  routines        Routine[]   
+  routines        Routine[]
   progressLogs    ProgressLog[]
-   appointmentsAsUser   Appointment[]       @relation("UserAppointments")
+  appointmentsAsUser   Appointment[]       @relation("UserAppointments")
   appointmentsAsDerm   Appointment[]       @relation("DermatologistAppointments")
   chatsAsUser          Chat[]              @relation("UserChats")
   chatsAsDermatologist Chat[]              @relation("DermatologistChats")
