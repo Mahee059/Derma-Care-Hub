@@ -1,58 +1,83 @@
 import { Request, Response } from "express";
 import { db } from "../lib/prisma";
 import bcrypt from "bcrypt";
-import { Prisma, Role } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { sendRegistrationConfirmationEmail } from "../config/email";
-import { generateAccessToken } from "../utils/jwt";
+import generateToken from "../utils/jwt";
+
 
 interface AuthRequest extends Request {
   user?: any;
 }
 
-// Register user controller
+//register user controller
 export const registerUser = async (req: Request, res: Response) => {
   const { name, email, password, role, phone, dermatologistId } = req.body;
 
   if (!name || !email || !password || !role || !phone) {
-    return res.status(400).json({ success: false, message: "Missing details" });
+    res.status(400).json({ success: false, message: "Missing details" });
+    return;
   }
 
+  // If registering as dermatologist, dermatologist ID is required
   if (role === "DERMATOLOGISTS" && !dermatologistId) {
-    return res.status(400).json({
+    res.status(400).json({
       success: false,
       message: "Dermatologist ID is required for dermatologist registration",
     });
+    return;
   }
 
   try {
-    const existingUser = await db.user.findUnique({ where: { email } });
+    const existingUser = await db.user.findUnique({
+      where: { email },
+    });
+
+    //check if there is any existing user
     if (existingUser) {
-      return res.status(401).json({ success: false, message: "User already exists" });
+      res.status(401).json({ success: false, message: "user already exists" });
+      return;
     }
 
-    const existingNumber = await db.user.findUnique({ where: { phone } });
+    //check existing phonenumber
+    const existingNumber = await db.user.findUnique({
+      where: { phone },
+    });
+
     if (existingNumber) {
-      return res.status(401).json({ success: false, message: "Phone number already exists" });
+      res
+        .status(401)
+        .json({ success: false, message: "phone number already exists" });
+      return;
     }
 
+    // Check if dermatologist ID already exists
     if (dermatologistId) {
-      const existingDermId = await db.user.findFirst({ where: { dermatologistId } });
+      const existingDermId = await db.user.findUnique({
+        where: { dermatologistId },
+      });
+
       if (existingDermId) {
-        return res.status(401).json({ success: false, message: "Dermatologist ID already exists" });
+        res.status(401).json({
+          success: false,
+          message: "Dermatologist ID already exists",
+        });
+        return;
       }
     }
 
-    // Hash password
+    //Hash password
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
 
-    // Validate roles
+    //validate roles
     const allowedRoles = ["USER", "DERMATOLOGISTS", "ADMIN"];
     if (!allowedRoles.includes(role)) {
-      return res.status(400).json({ success: false, message: "Invalid role" });
+      res.status(400).json({ success: false, message: "Invalid role" });
+      return;
     }
 
-    // Create user data
+    //create userdata
     const userData: Prisma.UserCreateInput = {
       email,
       password: hashPassword,
@@ -63,7 +88,9 @@ export const registerUser = async (req: Request, res: Response) => {
       status: role === "DERMATOLOGISTS" ? "PENDING" : "APPROVED",
     };
 
-    const createdUser = await db.user.create({ data: userData });
+    const createdUser = await db.user.create({
+      data: userData,
+    });
 
     // If dermatologist, notify admin and don't provide token
     if (role === "DERMATOLOGISTS") {
@@ -73,7 +100,11 @@ export const registerUser = async (req: Request, res: Response) => {
         dermatologistId
       );
 
-      const admins = await db.user.findMany({ where: { role: "ADMIN" } });
+      // Create notification for admin
+      const admins = await db.user.findMany({
+        where: { role: "ADMIN" },
+      });
+
       for (const admin of admins) {
         await db.notification.create({
           data: {
@@ -85,19 +116,16 @@ export const registerUser = async (req: Request, res: Response) => {
         });
       }
 
-      return res.status(201).json({
+      res.status(201).json({
         success: true,
         message:
           "Registration submitted successfully. Please check your email for confirmation and wait for admin approval.",
         requiresApproval: true,
       });
+      return;
     }
 
-    //  Generate JWT using id + role
-    const token = generateAccessToken({
-      id: createdUser.id,
-      role: createdUser.role as Role,
-    });
+    const token = generateToken(createdUser.id);
 
     res.status(201).json({
       success: true,
@@ -112,25 +140,33 @@ export const registerUser = async (req: Request, res: Response) => {
       token,
     });
   } catch (error) {
-    console.error("Register User Error:", error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
-// Login user controller
+//login user controller
 export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ success: false, message: "Missing details" });
+    res.status(400).json({ success: false, message: "Missing details" });
+    return;
   }
 
   try {
-    const existingUser = await db.user.findUnique({ where: { email } });
+    const existingUser = await db.user.findUnique({
+      where: { email },
+    });
+
+    //throw error if user doesn't exists
     if (!existingUser) {
-      return res.status(401).json({ success: false, message: "Invalid email or password" });
+      res
+        .status(401)
+        .json({ success: false, message: "Invalid email or password" });
+      return;
     }
 
+    // Check if dermatologist is approved
     if (
       existingUser.role === "DERMATOLOGISTS" &&
       existingUser.status !== "APPROVED"
@@ -139,23 +175,25 @@ export const loginUser = async (req: Request, res: Response) => {
       if (existingUser.status === "REJECTED") {
         message = "Your account has been rejected. Please contact support.";
       }
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         message,
         status: existingUser.status,
       });
+      return;
     }
 
+    //check if password matches
     const isMatch = await bcrypt.compare(password, existingUser.password);
+
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: "Invalid email or password" });
+      res
+        .status(401)
+        .json({ success: false, message: "Invalid email or password" });
+      return;
     }
 
-    //  Generate JWT using id + role
-    const token = generateAccessToken({
-      id: existingUser.id,
-      role: existingUser.role as Role,
-    });
+    const token = generateToken(existingUser.id);
 
     res.status(200).json({
       success: true,
@@ -173,17 +211,18 @@ export const loginUser = async (req: Request, res: Response) => {
       token,
     });
   } catch (error) {
-    console.error("Login User Error:", error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
-// Get current user
 export const getCurrentUser = async (req: AuthRequest, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user.id;
 
   if (!userId) {
-    return res.status(401).json({ success: false, message: "Unauthorized, login again" });
+    res
+      .status(401)
+      .json({ success: false, message: "Unauthorized, login again" });
+    return;
   }
 
   try {
@@ -202,12 +241,22 @@ export const getCurrentUser = async (req: AuthRequest, res: Response) => {
     });
 
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+      return;
     }
 
-    res.json({ success: true, user });
+    res.json({
+      success: true,
+      user,
+    });
   } catch (error) {
-    console.error("Get Current User Error:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    console.error("Get current user error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };

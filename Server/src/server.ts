@@ -16,6 +16,7 @@ import chatRoutes from "./routes/chat.routes";
 import AIRoutes from "./routes/AI.routes";
 import adminRoutes from "./routes/admin.routes";
 import { setupSocketHandlers } from "./socket/socket.handler";
+import cookieParser from "cookie-parser";
 
 
 
@@ -36,6 +37,7 @@ const io = new Server(httpServer, {
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Health check
 app.get("/", (_req, res) => {

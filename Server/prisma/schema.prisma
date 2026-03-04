@@ -54,7 +54,7 @@ model User {
   id              String              @id @default(uuid())
   email           String              @unique
   password        String
-  name            String              @db.VarChar(50) @default("User")  
+  name            String              @db.VarChar(50)  
   phone           String              @unique
   image           String?
   role            Role

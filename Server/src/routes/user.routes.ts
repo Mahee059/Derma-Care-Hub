@@ -5,7 +5,6 @@ import { upload } from "../middlewares/file-uploader.middlwares";
 import { deleteProfile, updateProfile } from "../controllers/user.controller";
 import { getAllUsers } from "../controllers/admin.conroller";
 
-
 const router = express.Router();
 
 router.use(authMiddleware);
