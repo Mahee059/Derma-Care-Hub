@@ -47,7 +47,7 @@ app.get("/", (_req, res) => {
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/skinProfile", skinProfileRoutes);
+app.use("/api/skin-profile", skinProfileRoutes); 
 app.use("/api/product", productRoutes); 
 app.use("/api/appointment", appointmentRoutes);
 app.use("/api/notification", notificationsRoutes);
